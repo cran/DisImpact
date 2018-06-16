@@ -34,6 +34,10 @@ di_ppg(success=Transfer, group=Ethnicity, cohort=Cohort, data=student_equity) %>
   as.data.frame
 
 ## ------------------------------------------------------------------------
+di_ppg(success=Transfer_Rate*n, group=Ethnicity, cohort=Cohort, weight=n, data=dSumm) %>%
+  as.data.frame
+
+## ------------------------------------------------------------------------
 # With custom reference (single)
 di_ppg(success=Transfer, group=Ethnicity, reference=0.54, data=student_equity) %>%
   as.data.frame
