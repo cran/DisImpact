@@ -55,6 +55,11 @@ di_ppg(success=Transfer, group=Ethnicity, data=student_equity, min_moe=0.02, use
   as.data.frame
 
 ## ------------------------------------------------------------------------
+# Set Native American to have have zero transfers and see what the results
+di_ppg(success=Transfer, group=Ethnicity, data=student_equity %>% mutate(Transfer=ifelse(Ethnicity=='Native American', 0, Transfer)), use_prop_in_moe=TRUE, prop_sub_0=0.1, prop_sub_1=0.9) %>%
+  as.data.frame
+
+## ------------------------------------------------------------------------
 # Without cohort
 ## Vector
 di_prop_index(success=student_equity$Transfer, group=student_equity$Ethnicity) %>% as.data.frame
