@@ -1,3 +1,6 @@
+* 0.0.5
+  - Added `di_ppg_iterate` helper function to iteratively calculate DI across many variables.
+
 * 0.0.4
   - For functions related to the percentage point gap method, add `prop_sub_0` and `prop_sub_1` parameters to account for scenarios where the `proportion` contains 0 or 1 to not lead to a zero MOE when `use_prop_in_moe=TRUE`.  Also, add warning messages when this happens.
 

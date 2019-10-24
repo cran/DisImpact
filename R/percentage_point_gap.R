@@ -21,7 +21,7 @@
 ##' ppg_moe(n=800, proportion=0.20)
 ##' ppg_moe(n=800, proportion=0.20, min_moe=0)
 ##' ppg_moe(n=c(200, 800, 1000, 2000), min_moe=0.01)
-##' @references California Community Colleges Chancellor's Office (2017).  \href{http://extranet.cccco.edu/Portals/1/TRIS/Research/Analysis/PercentagePointGapMethod2017.pdf}{Percentage Point Gap Method}.
+##' @references California Community Colleges Chancellor's Office (2017).  \href{https://www.cccco.edu/-/media/CCCCO-Website/About-Us/Divisions/Digital-Innovation-and-Infrastructure/Research/Files/PercentagePointGapMethod2017.ashx}{Percentage Point Gap Method}.
 ##' @export
 ppg_moe <- function(n, proportion, min_moe=0.03, prop_sub_0=0.5, prop_sub_1=0.5) {
   if (missing(proportion)) {
@@ -41,7 +41,7 @@ ppg_moe <- function(n, proportion, min_moe=0.03, prop_sub_0=0.5, prop_sub_1=0.5)
 }
 ##' Calculate disproportionate impact per the percentage point gap (PPG) method.
 ##'
-##' This function determines disproportionate impact based on the percentage point gap (PPG) method, as described in \href{http://extranet.cccco.edu/Portals/1/TRIS/Research/Analysis/PercentagePointGapMethod2017.pdf}{this} reference from the California Community Colleges Chancellor's Office.  It assumes that a higher rate is good ("success").  For rates that are deemed negative (eg, rate of drop-outs, high is bad), then consider looking at the converse of the non-success (eg, non drop-outs, high is good) instead in order to leverage this function properly.  Note that the margin of error (MOE) is calculated using using 1.96*sqrt(0.25^2/n), with a \code{min_moe} used as the minimum by default.
+##' This function determines disproportionate impact based on the percentage point gap (PPG) method, as described in \href{https://www.cccco.edu/-/media/CCCCO-Website/About-Us/Divisions/Digital-Innovation-and-Infrastructure/Research/Files/PercentagePointGapMethod2017.ashx}{this} reference from the California Community Colleges Chancellor's Office.  It assumes that a higher rate is good ("success").  For rates that are deemed negative (eg, rate of drop-outs, high is bad), then consider looking at the converse of the non-success (eg, non drop-outs, high is good) instead in order to leverage this function properly.  Note that the margin of error (MOE) is calculated using using 1.96*sqrt(0.25^2/n), with a \code{min_moe} used as the minimum by default.
 ##' @title Calculate disproportionate impact per the percentage point gap (PPG) method.
 ##' @param success A vector of success indicators (\code{1}/\code{0} or \code{TRUE}/\code{FALSE}) or an unquoted reference (name) to a column in \code{data} if it is specified.  It could also be a vector of counts, in which case \code{weight} (group size) should also be specified.
 ##' @param group A vector of group names of the same length as \code{success} or an unquoted reference (name) to a column in \code{data} if it is specified.
@@ -88,9 +88,10 @@ ppg_moe <- function(n, proportion, min_moe=0.03, prop_sub_0=0.5, prop_sub_1=0.5)
 ##'   , min_moe=0.02
 ##'   , use_prop_in_moe=TRUE) %>%
 ##'   as.data.frame
-##' @references California Community Colleges Chancellor's Office (2017).  \href{http://extranet.cccco.edu/Portals/1/TRIS/Research/Analysis/PercentagePointGapMethod2017.pdf}{Percentage Point Gap Method}.
+##' @references California Community Colleges Chancellor's Office (2017).  \href{https://www.cccco.edu/-/media/CCCCO-Website/About-Us/Divisions/Digital-Innovation-and-Infrastructure/Research/Files/PercentagePointGapMethod2017.ashx}{Percentage Point Gap Method}.
 ##' @export
-##' @import dplyr rlang
+##' @import dplyr
+##' @importFrom rlang !! enquo
 di_ppg <- function(success, group, cohort, weight, reference=c('overall', 'hpg'), data, min_moe=0.03, use_prop_in_moe=FALSE, prop_sub_0=0.5, prop_sub_1=0.5) {
   ## require(magrittr)
   ## require(dplyr)
@@ -167,9 +168,10 @@ di_ppg <- function(success, group, cohort, weight, reference=c('overall', 'hpg')
   }
   pct <- moe <- pct_lo <- pct_hi <- NULL # to resolve CRAN NOTE: no visible binding for global variable
   dResults <- dResults %>% 
-    mutate(moe=case_when(use_prop_in_moe ~ ppg_moe(n=n, proportion=pct, min_moe=min_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1)
-                         , !use_prop_in_moe ~ ppg_moe(n=n, min_moe=min_moe)
-                         )
+    mutate(## moe=case_when(use_prop_in_moe ~ ppg_moe(n=n, proportion=pct, min_moe=min_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1)
+           ##               , !use_prop_in_moe ~ ppg_moe(n=n, min_moe=min_moe)
+           ##               ) ## this always gets evaluated and warning message pops up from ppg_moe
+      moe=if (use_prop_in_moe) { ppg_moe(n=n, proportion=pct, min_moe=min_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1) } else { ppg_moe(n=n, min_moe=min_moe) }
          , pct_lo=pct - moe
          , pct_hi=pct + moe
          , di_indicator=ifelse(pct_hi <= reference, 1, 0)
@@ -181,4 +183,66 @@ di_ppg <- function(success, group, cohort, weight, reference=c('overall', 'hpg')
   }
   
   return(dResults)
+}
+
+##' Iteratively calculate disproportionate impact via the percentage point gap (PPG) method for many variables.
+##' 
+##' Iteratively calculate disproportionate impact via the percentage point gap (PPG) method for all combinations of `success_vars`, `group_vars`, and `cohort_vars`.
+##' @title Iteratively calculate disproportionate impact via the percentage point gap (PPG) method for many variables.
+##' @param data A data frame for which to iterate DI calculation for a set of variables.
+##' @param success_vars A character vector of success variable names to iterate across.
+##' @param group_vars A character vector of group (disaggregation) variable names to iterate across.
+##' @param cohort_vars A character vector of cohort variable names to iterate across.
+##' @param reference_groups Either 'overall', 'hpg', or a character vector of the same length as `group_vars` that indicates the reference group value for each group variable in `group_vars`.
+##' @param min_moe The minimum margin of error to be used in the PPG calculation, passed to `di_ppg`.
+##' @param use_prop_in_moe Whether the estimated proportions should be used in the margin of error calculation by the PPG, passed to `di_ppg`.
+##' @param prop_sub_0 Passed to `di_ppg`.
+##' @param prop_sub_1 Passed to `di_ppg`.
+##' @return A data frame with all relevant returned fields from `di_ppg` plus `success_variable` (elements of `success_vars`), `disaggregation` (elements of `group_vars`), and `reference_group` (elements of `reference_groups`).
+##' @examples
+##' library(dplyr)
+##' data(student_equity)
+##' # Multiple group variables
+##' di_ppg_iterate(data=student_equity, success_vars=c('Transfer')
+##'   , group_vars=c('Ethnicity', 'Gender'), cohort_vars=c('Cohort')
+##'   , reference_groups='overall')
+##' @import dplyr
+##' @importFrom tidyselect everything
+##' @importFrom purrr pmap
+##' @export
+di_ppg_iterate <- function(data, success_vars, group_vars, cohort_vars, reference_groups, min_moe=0.03, use_prop_in_moe=FALSE, prop_sub_0=0.5, prop_sub_1=0.5) {
+  stopifnot(length(group_vars) == length(reference_groups) | length(reference_groups) == 1)
+  if (length(unique(sapply(data[, group_vars], class))) > 1) {
+    stop("All variables specified in `group_vars` should be of the same class.  Suggestion: set them all as character data.")
+  }
+  
+  # CRAN: no visible binding for global variable
+  success_var <- group_var <- cohort_var <- reference_group <- NULL
+  
+  dRef <- data.frame(group_var=group_vars, reference_group=reference_groups, stringsAsFactors=FALSE)
+  
+  dCombination <- expand.grid(success_var=success_vars, group_var=group_vars, cohort_var=cohort_vars, min_moe=min_moe, use_prop_in_moe=use_prop_in_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1, stringsAsFactors=FALSE) %>%
+    left_join(dRef) %>%
+    select(success_var, group_var, cohort_var, reference_group, min_moe, use_prop_in_moe, prop_sub_0, prop_sub_1)
+
+  iterate <- function(success_var, group_var, cohort_var, reference_group, min_moe, use_prop_in_moe, prop_sub_0, prop_sub_1) {
+    if (!(reference_group %in% c('overall', 'hpg'))) {
+      reference_val <- sapply(sort(unique(data[[cohort_var]])), function(cohort) mean(data[[success_var]][data[[group_var]] == reference_group & data[[cohort_var]] == cohort])) # one for each non-NA cohort
+    } else {
+      reference_val <- reference_group # overall
+    }
+
+    # CRAN: no visible binding for global variable
+    success_variable <- disaggregation <- NULL
+    
+    di_ppg(success=data[[success_var]], group=data[[group_var]], cohort=data[[cohort_var]], reference=reference_val, min_moe=min_moe, use_prop_in_moe=use_prop_in_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1) %>%
+      mutate(
+        success_variable=success_var
+      , disaggregation=group_var
+      , reference_group=reference_group
+             ) %>%
+      select(success_variable, disaggregation, reference_group, everything())
+  }
+  pmap(dCombination, iterate) %>%
+    bind_rows
 }

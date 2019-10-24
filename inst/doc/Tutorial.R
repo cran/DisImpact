@@ -103,3 +103,13 @@ di_ppg(success=pmax(Transfer, a), group=Ethnicity, data=student_equity) %>%
 # Collapse Black and Hispanic
 di_ppg(success=Transfer, group=ifelse(Ethnicity %in% c('Black', 'Hispanic'), 'Black/Hispanic', Ethnicity), data=student_equity) %>% as.data.frame
 
+## ------------------------------------------------------------------------
+# Multiple group variables
+di_ppg_iterate(data=student_equity, success_vars=c('Transfer'), group_vars=c('Ethnicity', 'Gender'), cohort_vars=c('Cohort'), reference_groups='overall')
+
+# Multiple group variables and different reference groups
+bind_rows(
+  di_ppg_iterate(data=student_equity, success_vars=c('Transfer'), group_vars=c('Ethnicity', 'Gender'), cohort_vars=c('Cohort'), reference_groups=c('White', 'Male'))
+  , di_ppg_iterate(data=student_equity, success_vars=c('Transfer'), group_vars=c('Ethnicity', 'Gender'), cohort_vars=c('Cohort'), reference_groups='overall')
+)
+
