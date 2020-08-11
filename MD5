@@ -1,9 +1,9 @@
-bfaf9ee4941e6e490b47da3490960f2e *DESCRIPTION
+15e576ecc494e4d8b33633e5a52216df *DESCRIPTION
 48aa5e265d18d0b702bf6f4b9fc2e7e8 *NAMESPACE
-f8185f4da4ec924039e18c1c62e57386 *NEWS
+83a6eb59854eb905fcf0ddc35136a5f2 *NEWS
 34467f25b2ca7d126fbce265276d162d *R/80_percent_index.R
 12f70e0f7fa7106ef39b2fecfbf568a5 *R/data_student_equity.R
-5f8f0434b332bdc33cb8abe41f420534 *R/di_iterate.R
+1d36758c78590c03fdfdfced0aeca09b *R/di_iterate.R
 77507a980e41181483fc5124e16d9ff0 *R/percentage_point_gap.R
 ac9639fba922828ed2770749d5fcaafe *R/proportionality_index.R
 627fb5f435c7019e65f657681a850d24 *README.md
@@ -14,9 +14,9 @@ c5daf851ce1a1231edd9c2c264d973a7 *data/student_equity.rda
 c609c551defc96b8680fb2e9bbd96b40 *inst/doc/Scaling-DI-Calculations.html
 37ace1269282cd0fe11049c168924e24 *inst/doc/Tutorial.R
 50c2f2bbe12147faa489d2ea6f3cd4f2 *inst/doc/Tutorial.Rmd
-f423a82a0790da71df663c817bd908c8 *inst/doc/Tutorial.html
+176e3c1d49d1a2c5989885c591b9c0a4 *inst/doc/Tutorial.html
 8ba10ef5961da73c0520a3304c750d9e *man/di_80_index.Rd
-aa5bcdcb5b9d1c11fe4265043e24d050 *man/di_iterate.Rd
+b8a5a92e721d39582cd58d3f79ab7cca *man/di_iterate.Rd
 fe63a88052c6dadaf389a05d8c81c8a1 *man/di_ppg.Rd
 ab7a829e76cf41a47bb7a80e980d3e7b *man/di_ppg_iterate.Rd
 d8bb7a37224d5b59705864d65d7e8751 *man/di_prop_index.Rd
