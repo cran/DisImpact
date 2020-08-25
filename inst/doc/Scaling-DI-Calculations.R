@@ -191,8 +191,8 @@ df_di_summary_2 <- di_iterate(data=student_equity_summ
                           , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
                           , weight_var='N' # SET THIS
                             )
-dim(df_di_summary)
-dim(df_di_summary_2) # more rows?  because of NA cohort
+dim(df_di_summary)  ## original results
+dim(df_di_summary_2) # more rows?  because of NA cohort from Cohort_English and Cohort_Math
 dim(df_di_summary_2 %>% filter(!is.na(cohort)))
 
 ## ## if user wants to see the extra rows
@@ -215,9 +215,29 @@ df_di_summary_2 <- di_iterate(data=student_equity
                             )
 dim(df_di_summary)
 dim(df_di_summary_2) ## less rows because no longer have disaggregated results
+table(df_di_summary$disaggregation)
 table(df_di_summary_2$disaggregation) # No more '- None'
 
 ## ------------------------------------------------------------------------
+# Highest performing group as reference
+df_di_summary_2 <- di_iterate(data=student_equity
+                            , success_vars=c('Math', 'English', 'Transfer')
+                            , group_vars=c('Ethnicity', 'Gender')
+                            , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+                            , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+                            , ppg_reference_groups='hpg' ## SET THIS
+                              )
+
+# Reference: all other groups except group of interest (PPG minus 1)
+df_di_summary_2 <- di_iterate(data=student_equity
+                            , success_vars=c('Math', 'English', 'Transfer')
+                            , group_vars=c('Ethnicity', 'Gender')
+                            , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+                            , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+                            , ppg_reference_groups='all but current' ## SET THIS
+                              )
+
+# Reference: custom groups
 df_di_summary_2 <- di_iterate(data=student_equity
                             , success_vars=c('Math', 'English', 'Transfer')
                             , group_vars=c('Ethnicity', 'Gender')
@@ -236,6 +256,7 @@ df_di_summary_2 <- di_iterate(data=student_equity
                               )
 
 ## ------------------------------------------------------------------------
+# Custom referene groups
 df_di_summary_2 <- di_iterate(data=student_equity
                             , success_vars=c('Math', 'English', 'Transfer')
                             , group_vars=c('Ethnicity', 'Gender')

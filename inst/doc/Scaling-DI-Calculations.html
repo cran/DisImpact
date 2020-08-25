@@ -1047,7 +1047,7 @@ b. Among different subpopulations defined by age group?  (eg, among each of thes
 ##     weight_var = NULL, include_non_disagg_results = TRUE, ppg_reference_groups = &quot;overall&quot;, 
 ##     min_moe = 0.03, use_prop_in_moe = FALSE, prop_sub_0 = 0.5, 
 ##     prop_sub_1 = 0.5, di_prop_index_cutoff = 0.8, di_80_index_cutoff = 0.8, 
-##     di_80_index_reference_groups = NA, check_valid_reference = TRUE) 
+##     di_80_index_reference_groups = &quot;hpg&quot;, check_valid_reference = TRUE) 
 ## NULL
 </code></pre>
 
@@ -1055,7 +1055,7 @@ b. Among different subpopulations defined by age group?  (eg, among each of thes
 
 <h3>Passing a summarized data set to <code>data</code> and using <code>weight_var</code></h3>
 
-<p>Instead of passing in a student level data set, the user could also pass in a summarized data set (reduce data size).  To do so, the user should also specify <code>weight_var</code> to indicate the group size.  Let&#39;s illustrate with an example:</p>
+<p>Instead of passing in a student level data set, the user could also pass in a summarized data set, which saves space on your disk drive or in memory when imported into R.  When passing a summarized data set, the user should also specify <code>weight_var</code> to indicate the group size of each row.  Let&#39;s illustrate with an example:</p>
 
 <pre><code class="r">dim(student_equity)
 </code></pre>
@@ -1126,13 +1126,13 @@ df_di_summary_2 &lt;- di_iterate(data=student_equity_summ
 ## Joining, by = &quot;Ed_Goal&quot;
 </code></pre>
 
-<pre><code class="r">dim(df_di_summary)
+<pre><code class="r">dim(df_di_summary)  ## original results
 </code></pre>
 
 <pre><code>## [1] 898  21
 </code></pre>
 
-<pre><code class="r">dim(df_di_summary_2) # more rows?  because of NA cohort
+<pre><code class="r">dim(df_di_summary_2) # more rows?  because of NA cohort from Cohort_English and Cohort_Math
 </code></pre>
 
 <pre><code>## [1] 1075   21
@@ -1200,6 +1200,14 @@ all.equal(df_di_summary
 <pre><code>## [1] 808  21
 </code></pre>
 
+<pre><code class="r">table(df_di_summary$disaggregation)
+</code></pre>
+
+<pre><code>## 
+##    - None Ethnicity    Gender 
+##        90       539       269
+</code></pre>
+
 <pre><code class="r">table(df_di_summary_2$disaggregation) # No more &#39;- None&#39;
 </code></pre>
 
@@ -1212,12 +1220,13 @@ all.equal(df_di_summary
 
 <p>For the percentage point gap (PPG) method, <code>di_iterate</code> defaults to using the overall success rate as the reference for comparison (<code>ppg_reference_groups=&#39;overall&#39;</code>).  The user could set <code>ppg_reference_groups=&#39;hpg&#39;</code> for using the highest performing group as the comparison group, or <code>ppg_reference_groups=&#39;all but current&#39;</code> for using the combined success rate of all other groups excluding the group of interest (eg, if studying Hispanic students, then the reference group would be all non-Hispanic students).  The latter is sometimes referred to as &ldquo;PPG minus 1.&rdquo;  The user could also specify specific groups as reference:</p>
 
-<pre><code class="r">df_di_summary_2 &lt;- di_iterate(data=student_equity
+<pre><code class="r"># Highest performing group as reference
+df_di_summary_2 &lt;- di_iterate(data=student_equity
                             , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)
                             , group_vars=c(&#39;Ethnicity&#39;, &#39;Gender&#39;)
                             , cohort_vars=c(&#39;Cohort_Math&#39;, &#39;Cohort_English&#39;, &#39;Cohort&#39;)
                             , scenario_repeat_by_vars=c(&#39;Ed_Goal&#39;, &#39;College_Status&#39;)
-                            , ppg_reference_groups=c(&#39;White&#39;, &#39;Male&#39;) ## corresponds to each variable in group_vars
+                            , ppg_reference_groups=&#39;hpg&#39; ## SET THIS
                               )
 </code></pre>
 
@@ -1239,11 +1248,71 @@ all.equal(df_di_summary
 ## Joining, by = &quot;Ed_Goal&quot;
 </code></pre>
 
+<pre><code class="r"># Reference: all other groups except group of interest (PPG minus 1)
+df_di_summary_2 &lt;- di_iterate(data=student_equity
+                            , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)
+                            , group_vars=c(&#39;Ethnicity&#39;, &#39;Gender&#39;)
+                            , cohort_vars=c(&#39;Cohort_Math&#39;, &#39;Cohort_English&#39;, &#39;Cohort&#39;)
+                            , scenario_repeat_by_vars=c(&#39;Ed_Goal&#39;, &#39;College_Status&#39;)
+                            , ppg_reference_groups=&#39;all but current&#39; ## SET THIS
+                              )
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = &quot;College_Status&quot;
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = &quot;College_Status&quot;
+</code></pre>
+
+<pre><code>## Joining, by = &quot;Ed_Goal&quot;
+## Joining, by = &quot;Ed_Goal&quot;
+</code></pre>
+
+<pre><code class="r"># Reference: custom groups
+df_di_summary_2 &lt;- di_iterate(data=student_equity
+                            , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)
+                            , group_vars=c(&#39;Ethnicity&#39;, &#39;Gender&#39;)
+                            , cohort_vars=c(&#39;Cohort_Math&#39;, &#39;Cohort_English&#39;, &#39;Cohort&#39;)
+                            , scenario_repeat_by_vars=c(&#39;Ed_Goal&#39;, &#39;College_Status&#39;)
+                            , ppg_reference_groups=c(&#39;White&#39;, &#39;Male&#39;) ## corresponds to each variable in group_vars
+                              )
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = &quot;College_Status&quot;
+</code></pre>
+
+<pre><code>## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+## Joining, by = c(&quot;Ed_Goal&quot;, &quot;College_Status&quot;)
+</code></pre>
+
+<pre><code>## Joining, by = &quot;College_Status&quot;
+</code></pre>
+
+<pre><code>## Joining, by = &quot;Ed_Goal&quot;
+## Joining, by = &quot;Ed_Goal&quot;
+</code></pre>
+
 <p>The following arguments apply to the PPG: <code>min_moe</code>, <code>use_prop_in_moe</code>, <code>prop_sub_0</code>, <code>prop_sub_1</code>, and <code>use_prop_in_moe</code>.  See <code>?di_ppg</code> for more details.</p>
 
 <h3>Proportionality index DI threshold</h3>
 
-<p>For the proportionality index (PI) method, DI is determined using <code>di_prop_index_cutoff=0.8</code> by default.  This could be changed:</p>
+<p>For the proportionality index (PI) method, DI is determined using <code>di_prop_index_cutoff=0.8</code> by default.  This could be changed using the <code>di_prop_index_cutoff</code> argument.</p>
 
 <pre><code class="r">df_di_summary_2 &lt;- di_iterate(data=student_equity
                             , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)
@@ -1274,9 +1343,10 @@ all.equal(df_di_summary
 
 <h3>80% index reference groups and DI threshold</h3>
 
-<p>For the 80% index method, the highest performing group is used as reference by default (<code>di_80_index_reference_groups=NA</code>).  Similar to the PPG, the user could specify custom reference groups:</p>
+<p>For the 80% index method, the highest performing group is used as reference by default (<code>di_80_index_reference_groups=NA</code>).  Similar to the PPG, the user could specify custom reference groups.</p>
 
-<pre><code class="r">df_di_summary_2 &lt;- di_iterate(data=student_equity
+<pre><code class="r"># Custom referene groups
+df_di_summary_2 &lt;- di_iterate(data=student_equity
                             , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)
                             , group_vars=c(&#39;Ethnicity&#39;, &#39;Gender&#39;)
                             , cohort_vars=c(&#39;Cohort_Math&#39;, &#39;Cohort_English&#39;, &#39;Cohort&#39;)
@@ -1303,7 +1373,7 @@ all.equal(df_di_summary
 ## Joining, by = &quot;Ed_Goal&quot;
 </code></pre>
 
-<p>The 80% index uses 80% as the default threshold for declaring DI.  The user could alter this with the <code>di_80_index_cutoff</code> argument:</p>
+<p>The 80% index uses 80% as the default threshold for declaring DI.  The user could alter this with the <code>di_80_index_cutoff</code> argument.</p>
 
 <pre><code class="r">df_di_summary_2 &lt;- di_iterate(data=student_equity
                             , success_vars=c(&#39;Math&#39;, &#39;English&#39;, &#39;Transfer&#39;)

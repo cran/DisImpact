@@ -249,7 +249,7 @@ dim(student_equity)
 <pre><code class="r">dSumm &lt;- student_equity %&gt;%
   group_by(Cohort, Ethnicity) %&gt;%
   summarize(n=n(), Transfer_Rate=mean(Transfer))
-dSumm
+dSumm ## This is a summarized version of the data set
 </code></pre>
 
 <pre><code>## # A tibble: 12 x 4
@@ -350,7 +350,7 @@ di_ppg(success=Transfer, group=Ethnicity, cohort=Cohort, data=student_equity) %&
 ## 12 0.03000000 0.6014706 0.6614706            0
 </code></pre>
 
-<p><code>di_ppg</code> is also applicable to summarized data; just pass the counts to <code>success</code> and group size to <code>weight</code>:</p>
+<p><code>di_ppg</code> is also applicable to summarized data; just pass the counts to <code>success</code> and group size to <code>weight</code>.  For example, we use the summarized data set, <code>dSumm</code>, and sample size <code>n</code>, in the following:</p>
 
 <pre><code class="r">di_ppg(success=Transfer_Rate*n, group=Ethnicity, cohort=Cohort, weight=n, data=dSumm) %&gt;%
   as.data.frame
@@ -573,7 +573,7 @@ di_ppg(success=Transfer, group=Ethnicity, cohort=Cohort, reference=c(0.5, 0.55),
 ## 12 0.03000000 0.6014706 0.6614706            0
 </code></pre>
 
-<p>The margin of error (MOE) in <code>di_ppg</code> has 2 underlying assumptions (defaults):</p>
+<p>Disproportionate impact using the PPG relies on calculating the margine margin of error (MOE) pertaining around the success rate.  The MOE calculated in <code>di_ppg</code> has 2 underlying assumptions (defaults):</p>
 
 <ol>
 <li>the minimum MOE returned is 0.03, and</li>
@@ -978,12 +978,16 @@ di_80_index(success=student_equity$Transfer, group=student_equity$Ethnicity, coh
 ## 12   0.8495120            0
 </code></pre>
 
-<h2>When we have a non-success variable like drop-out</h2>
+<h2>When dealing with a non-success variable like drop-out or probation</h2>
 
-<p>Suppose we have a variable that indicates something negative.  We could calculate DI on the converse of it:</p>
+<p>All methods and functions implemented in the <code>DisImpact</code> package treat outcomes as positive: 1 is desired over 0 (higher rate is better, lower rate indicates disparity).  The choice of the name <code>success</code> in the functions&#39; arguments is intentional to remind the user of this.</p>
 
-<pre><code class="r">di_ppg(success=!Transfer, group=Ethnicity, data=student_equity) %&gt;%
-  as.data.frame
+<p>Suppose we have a variable that indicates something negative (eg, a flag for students on academic probation).  We could calculate DI on the converse of it by using the <code>!</code> (logical negation) operator:</p>
+
+<pre><code class="r">## di_ppg(success=!Probation, group=Ethnicity, data=student_equity) %&gt;%
+##   as.data.frame ## If there were a Probation variable
+di_ppg(success=!Transfer, group=Ethnicity, data=student_equity) %&gt;%
+  as.data.frame ## Illustrating the point with `!`
 </code></pre>
 
 <pre><code>##             group    n success       pct reference reference_group
@@ -1011,7 +1015,7 @@ a &lt;- sample(0:1, size=nrow(student_equity), replace=TRUE, prob=c(0.95, 0.05))
 mean(a)
 </code></pre>
 
-<pre><code>## [1] 0.04935
+<pre><code>## [1] 0.04885
 </code></pre>
 
 <pre><code class="r">di_ppg(success=pmax(Transfer, a), group=Ethnicity, data=student_equity) %&gt;%
@@ -1019,19 +1023,19 @@ mean(a)
 </code></pre>
 
 <pre><code>##             group    n success       pct reference reference_group
-## 1           Asian 6000    4381 0.7301667    0.5483         overall
-## 2           Black 2000     678 0.3390000    0.5483         overall
-## 3        Hispanic 4000     986 0.2465000    0.5483         overall
-## 4 Multi-Ethnicity 1000     526 0.5260000    0.5483         overall
-## 5 Native American  200      83 0.4150000    0.5483         overall
-## 6           White 6800    4312 0.6341176    0.5483         overall
+## 1           Asian 6000    4363 0.7271667   0.54845         overall
+## 2           Black 2000     676 0.3380000   0.54845         overall
+## 3        Hispanic 4000     994 0.2485000   0.54845         overall
+## 4 Multi-Ethnicity 1000     525 0.5250000   0.54845         overall
+## 5 Native American  200      81 0.4050000   0.54845         overall
+## 6           White 6800    4330 0.6367647   0.54845         overall
 ##          moe    pct_lo    pct_hi di_indicator
-## 1 0.03000000 0.7001667 0.7601667            0
-## 2 0.03000000 0.3090000 0.3690000            1
-## 3 0.03000000 0.2165000 0.2765000            1
-## 4 0.03099032 0.4950097 0.5569903            0
-## 5 0.06929646 0.3457035 0.4842965            1
-## 6 0.03000000 0.6041176 0.6641176            0
+## 1 0.03000000 0.6971667 0.7571667            0
+## 2 0.03000000 0.3080000 0.3680000            1
+## 3 0.03000000 0.2185000 0.2785000            1
+## 4 0.03099032 0.4940097 0.5559903            0
+## 5 0.06929646 0.3357035 0.4742965            1
+## 6 0.03000000 0.6067647 0.6667647            0
 </code></pre>
 
 <pre><code class="r"># Collapse Black and Hispanic

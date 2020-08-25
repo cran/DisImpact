@@ -19,7 +19,7 @@ dim(student_equity)
 dSumm <- student_equity %>%
   group_by(Cohort, Ethnicity) %>%
   summarize(n=n(), Transfer_Rate=mean(Transfer))
-dSumm
+dSumm ## This is a summarized version of the data set
 
 ## ------------------------------------------------------------------------
 # Vector
@@ -117,8 +117,10 @@ di_80_index(success=student_equity$Transfer, group=student_equity$Ethnicity, coh
 di_80_index(success=student_equity$Transfer, group=student_equity$Ethnicity, cohort=student_equity$Cohort, di_80_index_cutoff=0.50) %>% as.data.frame
 
 ## ------------------------------------------------------------------------
+## di_ppg(success=!Probation, group=Ethnicity, data=student_equity) %>%
+##   as.data.frame ## If there were a Probation variable
 di_ppg(success=!Transfer, group=Ethnicity, data=student_equity) %>%
-  as.data.frame
+  as.data.frame ## Illustrating the point with `!`
 
 ## ------------------------------------------------------------------------
 # Transform success
