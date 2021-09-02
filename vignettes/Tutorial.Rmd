@@ -3,7 +3,9 @@ title: "DisImpact Tutorial"
 author: "Vinh Nguyen"
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
     toc: true
 vignette: >
   %\VignetteIndexEntry{DisImpact Tutorial}
@@ -11,7 +13,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Introduction
+# Introduction
 
 The `DisImpact` R package contains functions that help in determining disproportionate impact (DI) based on the following methodologies:
 
@@ -19,30 +21,38 @@ The `DisImpact` R package contains functions that help in determining disproport
 2. [proportionality index](https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf) method (method #1 in reference), and
 3. [80% index](https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf) method (method #2 in reference).
 
-## Install Package
+# Install Package
 
-```{r}
+```R
 # From CRAN (Official)
-## install.packages('DisImpact')
+install.packages('DisImpact')
 
 # From github (Development)
-## devtools::install_github('vinhdizzo/DisImpact')
+devtools::install_github('vinhdizzo/DisImpact')
 ```
 
-## Load Packages
+# Load Packages
 
 ```{r, message=FALSE, warning=FALSE}
 library(DisImpact)
 library(dplyr) # Ease in manipulations with data frames
 ```
 
-## Load toy student equity data
+# Load toy student equity data
 
 To illustrate the functionality of the package, let's load a toy data set:
 ```{r}
 # Load fake data set
 data(student_equity)
+
+# Print first few observations
+head(student_equity)
+
+# For description of data set
+## ?student_equity
 ```
+
+For a description of the `student_equity` data set, type `?student_equity` in the R console.
 
 The toy data set can be summarized as follows:
 ```{r}
@@ -54,7 +64,7 @@ dSumm <- student_equity %>%
 dSumm ## This is a summarized version of the data set
 ```
 
-## Percentage point gap (PPG) method
+# Percentage point gap (PPG) method
 
 `di_ppg` is the main work function, and it can take on vectors or column names the tidy way:
 ```{r}
@@ -64,6 +74,8 @@ di_ppg(success=student_equity$Transfer, group=student_equity$Ethnicity) %>% as.d
 di_ppg(success=Transfer, group=Ethnicity, data=student_equity) %>%
   as.data.frame
 ```
+
+For a description of the `di_ppg` function, including both function arguments and returned results, type `?di_ppg` in the R console.
 
 Sometimes, one might want to break out the DI calculation by cohort:
 ```{r}
@@ -96,7 +108,7 @@ di_ppg(success=Transfer, group=Ethnicity, cohort=Cohort, reference='Asian', data
   as.data.frame
 ```
 
-The user could also pass in custom reference points for comparison (eg, a state-wide rate).  `di_ppg` accepts either a single reference point to be used or a vector of reference points, one for each cohort.  For the latter, the vector of reference points will be taken to correspond to the `cohort` variable, alphabetically ordered.
+The user could also pass in custom reference points for comparison (e.g., a state-wide rate).  `di_ppg` accepts either a single reference point to be used or a vector of reference points, one for each cohort.  For the latter, the vector of reference points will be taken to correspond to the `cohort` variable, alphabetically ordered.
 ```{r}
 # With custom reference (single)
 di_ppg(success=Transfer, group=Ethnicity, reference=0.54, data=student_equity) %>%
@@ -131,7 +143,7 @@ di_ppg(success=Transfer, group=Ethnicity, data=student_equity %>% mutate(Transfe
 ```
 
 
-## Proportionality index
+# Proportionality index method
 
 `di_prop_index` is the main work function for this method, and it can take on vectors or column names the tidy way:
 
@@ -151,6 +163,8 @@ di_prop_index(success=Transfer, group=Ethnicity, cohort=Cohort, data=student_equ
   as.data.frame
 ```
 
+For a description of the `di_prop_index` function, including both function arguments and returned results, type `?di_prop_index` in the R console.
+
 Note that the referenced document describing this method does not recommend a threshold on the proportionality index for declaring disproportionate impact.  The `di_prop_index` function uses `di_prop_index_cutoff=0.8` as the default threshold, which the user could change.
 
 ```{r}
@@ -158,7 +172,7 @@ Note that the referenced document describing this method does not recommend a th
 di_prop_index(success=student_equity$Transfer, group=student_equity$Ethnicity, cohort=student_equity$Cohort, di_prop_index_cutoff=0.5) %>% as.data.frame
 ```
 
-## 80% index
+# 80% index method
 
 `di_80_index` is the main work function for this method, and it can take on vectors or column names the tidy way:
 
@@ -178,6 +192,8 @@ di_80_index(success=Transfer, group=Ethnicity, cohort=Cohort, data=student_equit
   as.data.frame
 ```
 
+For a description of the `di_80_index` function, including both function arguments and returned results, type `?di_80_index` in the R console.
+
 By default, `di_80_index` uses the group with the highest success rate as reference in calculating the index.  One could specify the the comparison group using the `reference_group` argument (a value from `group`).
 
 ```{r}
@@ -193,11 +209,11 @@ By default, `di_80_index` uses 80% (`di_80_index_cutoff=0.80`) as the default th
 di_80_index(success=student_equity$Transfer, group=student_equity$Ethnicity, cohort=student_equity$Cohort, di_80_index_cutoff=0.50) %>% as.data.frame
 ```
 
-## When dealing with a non-success variable like drop-out or probation
+# When dealing with a non-success variable like drop-out or probation
 
 All methods and functions implemented in the `DisImpact` package treat outcomes as positive: 1 is desired over 0 (higher rate is better, lower rate indicates disparity).  The choice of the name `success` in the functions' arguments is intentional to remind the user of this.
 
-Suppose we have a variable that indicates something negative (eg, a flag for students on academic probation).  We could calculate DI on the converse of it by using the `!` (logical negation) operator:
+Suppose we have a variable that indicates something negative (e.g., a flag for students on academic probation).  We could calculate DI on the converse of it by using the `!` (logical negation) operator:
 ```{r}
 ## di_ppg(success=!Probation, group=Ethnicity, data=student_equity) %>%
 ##   as.data.frame ## If there were a Probation variable
@@ -205,7 +221,7 @@ di_ppg(success=!Transfer, group=Ethnicity, data=student_equity) %>%
   as.data.frame ## Illustrating the point with `!`
 ```
 
-## Transformations on the fly
+# Transformations on the fly
 
 We can compute the success, group, and cohort variables on the fly:
 ```{r}
@@ -219,7 +235,7 @@ di_ppg(success=pmax(Transfer, a), group=Ethnicity, data=student_equity) %>%
 di_ppg(success=Transfer, group=ifelse(Ethnicity %in% c('Black', 'Hispanic'), 'Black/Hispanic', Ethnicity), data=student_equity) %>% as.data.frame
 ```
 
-## Calculate DI for many variables and groups
+# Calculate DI for many variables and groups
 
 It is often the case that the user desires to calculate disproportionate impact across many outcome variables and many disaggregation/group variables.  The function `di_iterate` allows the user to specify a data set and the various variables to iterate across:
 ```{r}
@@ -234,4 +250,12 @@ bind_rows(
 )
 ```
 
-There is a separate vignette that explains how one might leverage `di_iterate` for rapid dashboard development and deployment.
+There is a separate [vignette](Scaling-DI-Calculations.html) that explains how one might leverage `di_iterate` for rapid dashboard development and deployment with disaggregation and disproportionate impact features.
+
+# Appendix: R and R Package Versions
+
+This vignette was generated using an R session with the following packages.  There may be some discrepancies when the reader replicates the code caused by version mismatch.
+
+```{r}
+sessionInfo()
+```

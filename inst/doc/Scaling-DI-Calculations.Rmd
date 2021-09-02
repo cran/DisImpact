@@ -3,7 +3,9 @@ title: "Scaling Disproportionate Impact (DI) Calculations for Interactive Visual
 author: "Vinh Nguyen"
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_vignette:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
     toc: true
 vignette: >
   %\VignetteIndexEntry{Scaling Disproportionate Impact (DI) Calculations}
@@ -11,9 +13,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Introduction
+# Introduction
 
-It is often desirable to visualize student success data with the ability to disaggregate by multiple group variables to highlight equity gaps and disproportionate impact (DI) in an interactive dashboard (eg, Tableau or Power BI).  It is certainly feasible to calculate disproportionate impact on the fly in standard dashboard tools, but doing so:
+It is often desirable to visualize student success data with the ability to disaggregate by multiple group variables to highlight equity gaps and disproportionate impact (DI) in an interactive dashboard (e.g., Tableau or Power BI).  It is certainly feasible to calculate disproportionate impact on the fly in standard dashboard tools, but doing so:
 
 1. increases development time,
 2. increases the likelihood for error in calculations as the code has to be "re-written" for each dashboard, and
@@ -30,7 +32,7 @@ Using this workflow, one could scale up DI calculations and rapidly develop dash
 
 The `DisImpact` package offers the `di_iterate` function that allows one to accomplish step 2 in the suggested workflow.
 
-## Load `DisImpact` and toy data set
+# Load `DisImpact` and toy data set
 
 First, load the necessary packages.
 
@@ -54,7 +56,7 @@ kable(student_equity[1:6, ], caption='A few rows from the `student_equity` data 
 
 To get a description of each variable, type `?student_equity` in the R console.
 
-## Execute `di_iterate` on a data set
+# Execute `di_iterate` on a data set
 
 Let's illustrate the `di_iterate` function with some key arguments:
 
@@ -62,7 +64,7 @@ Let's illustrate the `di_iterate` function with some key arguments:
 - `success_vars`: all outcome variables of interest.
 - `group_vars`: all variables to disaggregate by (for calculating equity gaps and disproportionate impact).
 - `cohort_vars` (optional): variables defining cohorts, corresponding to those in `success_vars`.
-- `scenario_repeat_by_vars` (optional): variables to repeat DI calculations for across all combination of these variables.  Use only if the user is interested in performing a DI analysis for variables in `group_vars` for everyone in `data`, and separately for each combination of subpopulations specified using `scenario_repeat_by_vars`.  Each combination of these variables (eg, full time, first time college students with an ed goal of degree/transfer as one combination) would constitute an iteration / sample for which to calculate disproportionate impact for outcomes listed in `success_vars` and for the disaggregation variables listed in `group_vars`.
+- `scenario_repeat_by_vars` (optional): variables to repeat DI calculations for across all combination of these variables.  Use only if the user is interested in performing a DI analysis for variables in `group_vars` for everyone in `data`, and separately for each combination of subpopulations specified using `scenario_repeat_by_vars`.  Each combination of these variables (e.g., full time, first time college students with an ed goal of degree/transfer as one combination) would constitute an iteration / sample for which to calculate disproportionate impact for outcomes listed in `success_vars` and for the disaggregation variables listed in `group_vars`.
 
 To see the details of these and other arguments, type `?di_iterate` in the R console.
 
@@ -84,7 +86,7 @@ df_di_summary <- di_iterate(data=student_equity
 ## df_di_summary <- di_iterate(data=student_equity, success_vars=c('Math', 'English', 'Transfer'), group_vars=c('Ethnicity', 'Gender'), cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort'), scenario_repeat_by_vars=c('Ed_Goal', 'College_Status'), ppg_reference_groups=c('all but current'), di_80_index_reference_groups=c('White', 'Male'))
 ```
 
-## Explore resulting summary data set
+# Explore resulting summary data set
 
 ```{r}
 dim(df_di_summary)
@@ -92,7 +94,7 @@ df_di_summary %>% head %>% as.data.frame # first few rows
 
 ```
 
-The variables `di_indicator_ppg`, `di_indicator_prop_index`, and `di_indicator_80_index` are DI flags using the three methods.
+The variables `di_indicator_ppg`, `di_indicator_prop_index`, and `di_indicator_80_index` are DI flags using the three methods.  For additional explanations on other variables/columns in the returned data set, type `?di_iterate` in the R console to bring up the documentation.
 
 Next, note that the scenario `'- All'` is included for all variables passed to `scenario_repeat_by_vars` by default:
 ```{r}
@@ -120,7 +122,7 @@ df_di_summary %>%
   kable
 ```
 
-## Visualization (emulating dashboard features)
+# Visualization (emulating dashboard features)
 
 In this section, we emulate what a dashboard could visualize.
 
@@ -152,33 +154,27 @@ df_di_summary %>%
   filter(Ed_Goal=='- All', College_Status=='- All', success_variable=='Math', disaggregation=='- None') %>%
   as.data.frame
 ```
-```{r include=FALSE}
-run_plots <- FALSE
-# run_plots <- TRUE
-if (run_plots) {
-  library(ggplot2)
-  library(forcats)
-  library(scales)
+```{r, fig.width=9, fig.height=5}
+library(ggplot2)
+library(forcats)
+library(scales)
 
-  # No Disaggregation
-  df_di_summary %>%
-    filter(Ed_Goal=='- All', College_Status=='- All', success_variable=='Math', disaggregation=='- None') %>%
-    select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
-    mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
-    ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
-    geom_point() +
-    geom_line() +
-    xlab('Cohort') +
-    ylab('Rate') +
-    theme_bw() +
-    scale_color_manual(values=c('#1b9e77'), name='Group') +
-                                        # labs(size='Disproportionate Impact') +
-  scale_y_continuous(labels = percent, limits=c(0, 1)) +
-    ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = '- All' | College Status = '- All' | Outcome = 'Math' | Disaggregation = '- None'"))
-  ggsave('Dashboard_1.png', height=5, width=9)
-}
+# No Disaggregation
+df_di_summary %>%
+  filter(Ed_Goal=='- All', College_Status=='- All', success_variable=='Math', disaggregation=='- None') %>%
+  select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
+  mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
+  ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
+  geom_point() +
+  geom_line() +
+  xlab('Cohort') +
+  ylab('Rate') +
+  theme_bw() +
+  scale_color_manual(values=c('#1b9e77'), name='Group') +
+                                      # labs(size='Disproportionate Impact') +
+scale_y_continuous(labels = percent, limits=c(0, 1)) +
+  ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = '- All' | College Status = '- All' | Outcome = 'Math' | Disaggregation = '- None'"))
 ```
-![Dashboard Viz 1: Non-disaggregated results.](./Dashboard_1.png){width=100%}
 
 In this dashboard, one could choose to disaggregate by ethnicity and highlight disproportionate impact (for simplicity, let's use the percentage point gap method, or the `di_indicator_ppg` flag in subsequent visualizations):
 ```{r}
@@ -188,27 +184,23 @@ df_di_summary %>%
   select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
   as.data.frame
 ```
-```{r include=FALSE}
-if (run_plots) {
-  # Disaggregation: Ethnicity
-  df_di_summary %>%
-    filter(Ed_Goal=='- All', College_Status=='- All', success_variable=='Math', disaggregation=='Ethnicity') %>%
-    select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
-    mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
-    ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
-    geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
-    geom_line() +
-    xlab('Cohort') +
-    ylab('Rate') +
-    theme_bw() +
-    scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Ethnicity') +
-    labs(size='Disproportionate Impact') +
-    scale_y_continuous(labels = percent, limits=c(0, 1)) +
-    ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = '- All' | College Status = '- All' | Outcome = 'Math' | Disaggregation = 'Ethnicity'"))
-  ggsave('Dashboard_2.png', height=5, width=9)
-}
+```{r, fig.width=9, fig.height=5}
+# Disaggregation: Ethnicity
+df_di_summary %>%
+  filter(Ed_Goal=='- All', College_Status=='- All', success_variable=='Math', disaggregation=='Ethnicity') %>%
+  select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
+  mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
+  ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
+  geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
+  geom_line() +
+  xlab('Cohort') +
+  ylab('Rate') +
+  theme_bw() +
+  scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Ethnicity') +
+  labs(size='Disproportionate Impact') +
+  scale_y_continuous(labels = percent, limits=c(0, 1)) +
+  ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = '- All' | College Status = '- All' | Outcome = 'Math' | Disaggregation = 'Ethnicity'"))
 ```
-![Dashboard Viz 2: Disaggregated by ethnicity.](./Dashboard_2.png){width=100%}
 
 In a dashboard, the user might be interested in focusing on degree/transfer students.  We emulate this by filtering on `Ed_Goal=='Deg/Transer'`:
 ```{r}
@@ -218,27 +210,23 @@ df_di_summary %>%
   select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
   as.data.frame
 ```
-```{r include=FALSE}
-if (run_plots) {
-  # Disaggregation: Ethnicity; Deg/Transfer
-  df_di_summary %>%
-    filter(Ed_Goal=='Deg/Transfer', College_Status=='- All', success_variable=='Math', disaggregation=='Ethnicity') %>%
-    select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
-    mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
-    ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
-    geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
-    geom_line() +
-    xlab('Cohort') +
-    ylab('Rate') +
-    theme_bw() +
-    scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Ethnicity') +
-    labs(size='Disproportionate Impact') +
-    scale_y_continuous(labels = percent, limits=c(0, 1)) +
-    ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = 'Deg/Transfer' | College Status = '- All' | Outcome = 'Math' | Disaggregation = 'Ethnicity'"))
-  ggsave('Dashboard_3.png', height=5, width=9)
-}
+```{r, fig.width=9, fig.height=5}
+# Disaggregation: Ethnicity; Deg/Transfer
+df_di_summary %>%
+  filter(Ed_Goal=='Deg/Transfer', College_Status=='- All', success_variable=='Math', disaggregation=='Ethnicity') %>%
+  select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
+  mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
+  ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
+  geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
+  geom_line() +
+  xlab('Cohort') +
+  ylab('Rate') +
+  theme_bw() +
+  scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Ethnicity') +
+  labs(size='Disproportionate Impact') +
+  scale_y_continuous(labels = percent, limits=c(0, 1)) +
+  ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = 'Deg/Transfer' | College Status = '- All' | Outcome = 'Math' | Disaggregation = 'Ethnicity'"))
 ```
-![Dashboard Viz 3: Focus on degree/transfer students.](./Dashboard_3.png){width=100%}
 
 In a dashboard, the user could switch the outcome to English and disaggregate by Gender:
 ```{r}
@@ -247,31 +235,27 @@ df_di_summary %>%
   filter(Ed_Goal=='Deg/Transfer', College_Status=='- All', success_variable=='English', disaggregation=='Gender') %>%
   as.data.frame
 ```
-```{r include=FALSE}
-if (run_plots) {
-  # Disaggregation: Gender; Deg/Transfer; English
-  df_di_summary %>%
-    filter(Ed_Goal=='Deg/Transfer', College_Status=='- All', success_variable=='English', disaggregation=='Gender') %>%
-    select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
-    mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
-    ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
-    geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
-    geom_line() +
-    xlab('Cohort') +
-    ylab('Rate') +
-    theme_bw() +
-    scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Gender') +
-    labs(size='Disproportionate Impact') +
-    scale_y_continuous(labels = percent, limits=c(0, 1)) +
-    ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = 'Deg/Transfer' | College Status = '- All' | Outcome = 'English' | Disaggregation = 'Gender'"))
-  ggsave('Dashboard_4.png', height=5, width=9)
-}
+```{r, fig.width=9, fig.height=5}
+# Disaggregation: Gender; Deg/Transfer; English
+df_di_summary %>%
+  filter(Ed_Goal=='Deg/Transfer', College_Status=='- All', success_variable=='English', disaggregation=='Gender') %>%
+  select(cohort, group, n, pct, di_indicator_ppg, di_indicator_prop_index, di_indicator_80_index) %>%
+  mutate(group=factor(group) %>% fct_reorder(desc(pct))) %>% 
+  ggplot(data=., mapping=aes(x=factor(cohort), y=pct, group=group, color=group)) +
+  geom_point(aes(size=factor(di_indicator_ppg, levels=c(0, 1), labels=c('Not DI', 'DI')))) +
+  geom_line() +
+  xlab('Cohort') +
+  ylab('Rate') +
+  theme_bw() +
+  scale_color_manual(values=c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02'), name='Gender') +
+  labs(size='Disproportionate Impact') +
+  scale_y_continuous(labels = percent, limits=c(0, 1)) +
+  ggtitle('Dashboard drop-down selections:', subtitle=paste0("Ed Goal = 'Deg/Transfer' | College Status = '- All' | Outcome = 'English' | Disaggregation = 'Gender'"))
 ```
-![Dashboard Viz 4: switch outcome to English and disaggregate by Gender.](./Dashboard_4.png){width=100%}
 
-## What is the difference between `group_vars` and `scenario_repeat_by_vars`?
+# What is the difference between `group_vars` and `scenario_repeat_by_vars`?
 
-For different classification variables, (eg, age group, full time status, and education goal), the user might be confused as to whether to pass these into the `group_vars` argument or the `scenario_repeat_by_vars` argument.  The answer is it depends on what the user wants to analyze.  If we think of a single student population of interest (eg, the data set being passed to `di_iterate` such as all students enrolled at the institution), then the user should pass into `group_vars` all variables that they are *interested in disaggregating on and performing a DI analysis* (eg, are there disparity among ethnic student groups?  First generation students?).  The `group_vars` argument is required.
+For different classification variables, (e.g., age group, full time status, and education goal), the user might be confused as to whether to pass these into the `group_vars` argument or the `scenario_repeat_by_vars` argument.  The answer is it depends on what the user wants to analyze.  If we think of a single student population of interest (e.g., the data set being passed to `di_iterate` such as all students enrolled at the institution), then the user should pass into `group_vars` all variables that they are *interested in disaggregating on and performing a DI analysis* (e.g., are there disparity among ethnic student groups?  First generation students?).  The `group_vars` argument is required.
 
 On the other hand, the `scenario_repeat_by_vars` argument is optional, and when not specified, the DI analysis is performed on all outcomes specified in `success_vars` and all disaggregation variables specified in `group_vars`, using all students passed to `data` as a single population.  The user should only pass variables into `scenario_repeat_by_vars` if they want to split the student population into multiple subpopulations to perform DI analysis on.  For example, if ethnicity, first generation status, and age group and were specified in `group_vars`, then the user is trying to answer the following questions:
 
@@ -283,12 +267,12 @@ If on the other hand, the user passes ethnicity and first generation status to `
 
 1. Is there disparity between different ethnic student groups?
    a. Among all students defined by `data`?
-   b. Among different subpopulations defined by age group?  (eg, among each of these groups: 18-21, 22-25, 26-35, 35-50, 51+)
+   b. Among different subpopulations defined by age group?  (e.g., among each of these groups: 18-21, 22-25, 26-35, 35-50, 51+)
 2. Is there disparity between first generation students vs. non-first generation students?
    a. Among all students defined by `data`?
-   b. Among different subpopulations defined by age group?  (eg, among each of these groups: 18-21, 22-25, 26-35, 35-50, 51+)
+   b. Among different subpopulations defined by age group?  (e.g., among each of these groups: 18-21, 22-25, 26-35, 35-50, 51+)
 
-## Understanding the default parameters in `di_iterate`, and overriding them
+# Understanding the default parameters in `di_iterate`, and overriding them
 
 The function `di_iterate` has been designed to be highly flexible through the use of function arguments / parameters, with many defaults:
 ```{r}
@@ -297,7 +281,7 @@ args(di_iterate)
 
 In this section, we illustrate how each argument could be used.  Type `?di_iterate` to read the description of each.
 
-### Passing a summarized data set to `data` and using `weight_var`
+## Passing a summarized data set to `data` and using `weight_var`
 
 Instead of passing in a student level data set, the user could also pass in a summarized data set, which saves space on your disk drive or in memory when imported into R.  When passing a summarized data set, the user should also specify `weight_var` to indicate the group size of each row.  Let's illustrate with an example:
 
@@ -341,7 +325,7 @@ all.equal(df_di_summary
 
 ```
 
-### Suppress non-disaggregated results using `include_non_disagg_results`
+## Suppress non-disaggregated results using `include_non_disagg_results`
 
 By default, the non-disaggregated results are also returned.  If the user wants to suppress this, they could set `include_non_disagg_results=FALSE`:
 
@@ -359,9 +343,9 @@ table(df_di_summary$disaggregation)
 table(df_di_summary_2$disaggregation) # No more '- None'
 ```
 
-### PPG reference groups and other parameters
+## PPG reference groups and other parameters
 
-For the percentage point gap (PPG) method, `di_iterate` defaults to using the overall success rate as the reference for comparison (`ppg_reference_groups='overall'`).  The user could set `ppg_reference_groups='hpg'` for using the highest performing group as the comparison group, or `ppg_reference_groups='all but current'` for using the combined success rate of all other groups excluding the group of interest (eg, if studying Hispanic students, then the reference group would be all non-Hispanic students).  The latter is sometimes referred to as "PPG minus 1."  The user could also specify specific groups as reference:
+For the percentage point gap (PPG) method, `di_iterate` defaults to using the overall success rate as the reference for comparison (`ppg_reference_groups='overall'`).  The user could set `ppg_reference_groups='hpg'` to use the highest performing group as the comparison group, or `ppg_reference_groups='all but current'` for using the combined success rate of all other groups excluding the group of interest (e.g., if studying Hispanic students, then the reference group would be all non-Hispanic students).  The latter is sometimes referred to as "PPG minus 1" or "PPG-1."  The user could also specify specific groups as reference:
 
 ```{r}
 # Highest performing group as reference
@@ -394,7 +378,7 @@ df_di_summary_2 <- di_iterate(data=student_equity
 
 The following arguments apply to the PPG: `min_moe`, `use_prop_in_moe`, `prop_sub_0`, `prop_sub_1`, and `use_prop_in_moe`.  See `?di_ppg` for more details.
 
-### Proportionality index DI threshold
+## Proportionality index DI threshold
 
 For the proportionality index (PI) method, DI is determined using `di_prop_index_cutoff=0.8` by default.  This could be changed using the `di_prop_index_cutoff` argument.
 
@@ -408,12 +392,12 @@ df_di_summary_2 <- di_iterate(data=student_equity
                               )
 ```
 
-### 80% index reference groups and DI threshold
+## 80% index reference groups and DI threshold
 
-For the 80% index method, the highest performing group is used as reference by default (`di_80_index_reference_groups=NA`).  Similar to the PPG, the user could specify custom reference groups.
+For the 80% index method, the highest performing group is used as reference by default (`di_80_index_reference_groups='hpg'`).  Similar to the PPG, the user could specify custom reference groups.
 
 ```{r}
-# Custom referene groups
+# Custom reference groups
 df_di_summary_2 <- di_iterate(data=student_equity
                             , success_vars=c('Math', 'English', 'Transfer')
                             , group_vars=c('Ethnicity', 'Gender')
@@ -422,6 +406,8 @@ df_di_summary_2 <- di_iterate(data=student_equity
                             , di_80_index_reference_groups=c('White', 'Male') ## corresponds to each variable in group_vars
                               )
 ```
+
+Besides specifying a specific reference group, the function also acccepts `'overall'` and `'all but current'`.  The former uses the overall success rate as reference for comparison.  The latter uses the combined success rate of all other groups as reference for comparison.
 
 The 80% index uses 80% as the default threshold for declaring DI.  The user could alter this with the `di_80_index_cutoff` argument.
 
@@ -435,9 +421,9 @@ df_di_summary_2 <- di_iterate(data=student_equity
                               )
 ```
 
-## Multiple PPG or DI parameter scenarios in results
+# Multiple PPG or DI parameter scenarios in results
 
-In a single call of `di_iterate`, the results of all three DI methods are returned in one run.  If the user is interested in doing DI calculations using various scenarios of the same method (eg, using the overall rate as reference for PPG, and using a pre-specified list of reference rates), then it is recommended that the user execute `di_iterate` multiple times and combining the results (stacking).  If the user chooses to do this, then it is a good idea to set `include_non_disagg_results=FALSE` in subsequent `di_iterate` runs to not duplicate rows of non-disaggregated results.
+In a single call of `di_iterate`, the results of all three DI methods are returned in one run.  If the user is interested in doing DI calculations using various scenarios of the same method (e.g., using the overall rate as reference for PPG, and using a pre-specified list of reference rates), then it is recommended that the user execute `di_iterate` multiple times and combining the results (stacking).  If the user chooses to do this, then it is a good idea to set `include_non_disagg_results=FALSE` in subsequent `di_iterate` runs to not duplicate rows of non-disaggregated results.
 
 ```{r}
 # Multiple group variables and different reference groups
@@ -461,11 +447,19 @@ df_di_summary_long <- bind_rows(
 dim(df_di_summary_long)
 ```
 
-## FERPA block/suppression
+# FERPA block/suppression
 
-Since `di_iterate` disaggregates on many variables and subpopulations, it is not uncommon the returned results contain rows summarizing small samples.  As is common in education research, care should be taken to not unintentionally disclose the educational outcomes of students (results linked to particular students, ie, FERPA regulation).  The user might want to filter out rows with small samples (eg, `n < 10`):
+Since `di_iterate` disaggregates on many variables and subpopulations, it is not uncommon the returned results contain rows summarizing small samples.  As is common in education research, care should be taken to not unintentionally disclose the educational outcomes of students (results linked to particular students, ie, FERPA regulation).  The user might want to filter out rows with small samples (e.g., `n < 10`):
 ```{r}
 ## df_di_summary %>%
 ##   mutate(FERPA_Block=ifelse(n < 10, 1, 0)) %>%
 ##   filter(FERPA_Block == 0)
+```
+
+# Appendix: R and R Package Versions
+
+This vignette was generated using an R session with the following packages.  There may be some discrepancies when the reader replicates the code caused by version mismatch.
+
+```{r}
+sessionInfo()
 ```

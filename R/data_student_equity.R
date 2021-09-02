@@ -14,6 +14,19 @@
 #'   \item{Ed_Goal}{student's educational goal (one of: \code{Deg/Transfer}, \code{Other}).}
 #'   \item{College_Status}{student's educational status (one of: \code{First-time College},  \code{Other}).}
 #'   \item{Student_ID}{student's unique identifier.}
+#'   \item{EthnicityFlag_Asian}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Asian.}
+#'   \item{EthnicityFlag_Black}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Black.}
+#'   \item{EthnicityFlag_Hispanic}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Hispanic.}
+#'   \item{EthnicityFlag_NativeAmerican}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Native American.}
+#'   \item{EthnicityFlag_PacificIslander}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Pacific Islander.}
+#'   \item{EthnicityFlag_White}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as White.}
+#'   \item{EthnicityFlag_Carribean}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Carribean.}
+#'   \item{EthnicityFlag_EastAsian}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as East Asian.}
+#'   \item{EthnicityFlag_SouthEastAsian}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Southeast Asian.}
+#'   \item{EthnicityFlag_SouthWestAsianNorthAfrican}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Southwest Asian / North African (SWANA).}
+#'   \item{EthnicityFlag_AANAPI}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Asian-American or Native American Pacific Islander (AANAPI).}
+#'   \item{EthnicityFlag_Unknown}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as Unknown.}
+#'   \item{EthnicityFlag_TwoorMoreRaces}{1 (yes) or 0 (no) indicating whether or not a student self-identifies as two or more races.}
 #' }
 #' @docType data
 #' 
@@ -56,7 +69,37 @@
 ##   select(Ethnicity, Gender, Cohort, Transfer, Cohort_Math, Math, Cohort_English, English, everything()) %>%
 ## as.data.frame
 
+## # Import some sample multi-ethnicity data
+## library(readr)
+## d_multi_eth <- read_csv('../Multi-Ethnicity Data/Results/Multi-Ethnicity.csv')
+
+## # Append this multi-ethnicity data
+## set.seed(1000)
+## student_equity <- student_equity %>%
+##   group_by(Ethnicity) %>%
+##   mutate(random_id=sample(n())) %>%
+##   ungroup %>%
+##   left_join(
+##     d_multi_eth %>%
+##     group_by(Ethnicity) %>%
+##     mutate(random_id=sample(n())) %>%
+##     ungroup
+##   ) %>%
+##   select(-random_id) %>%
+##   group_by(Ethnicity) %>% 
+##   mutate_at(.vars=vars(starts_with('EthnicityFlag')), .funs=function(x) ifelse(is.na(x), sample(x[!is.na(x)], size=n(), replace=TRUE), x)) %>%
+##   ungroup %>%
+##   # Fudge math success data to illustrate multi-ethnicity
+##   mutate(Math=ifelse(EthnicityFlag_PacificIslander==0, Math, sample(x=1:0, size=n(), replace=TRUE, prob=c(0.30, 0.70)))
+##        ## , Math=ifelse(EthnicityFlag_SouthEastAsian==0, Math, sample(x=1:0, size=n(), replace=TRUE, prob=c(0.50, 0.50)))
+##        ## , Math=ifelse(EthnicityFlag_Carribean==0, Math, sample(x=1:0, size=n(), replace=TRUE, prob=c(0.20, 0.80)))
+##        , Math=ifelse(Math==0, sample(c(NA, 0), size=length(Transfer), replace=TRUE, prob=c(0.2, 0.8)), Math)
+##        , Cohort_Math=ifelse(is.na(Math), NA, Cohort + sample(c(0, 1, 2), size=length(Transfer), replace=TRUE, prob=c(0.5, 0.3, 0.2)))
+##                      ) %>% 
+##   as.data.frame
+
 ## # Export data set to ./data
-## devtools::use_data(student_equity, overwrite=TRUE)
+## ##devtools::use_data(student_equity, overwrite=TRUE) ## deprecated
+## usethis::use_data(student_equity, overwrite=TRUE)
 ## openxlsx::write.xlsx(x=student_equity, file='~/Downloads/student_equity.xlsx')
 
