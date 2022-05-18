@@ -12,23 +12,20 @@
 
 <meta name="author" content="Vinh Nguyen" />
 
-<meta name="date" content="2022-02-17" />
+<meta name="date" content="2022-05-17" />
 
 <title>DisImpact Tutorial</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -36,19 +33,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -68,7 +65,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -156,7 +153,7 @@ code span.ot { color: #007020; }
 <div class="inner">
 <h1 class="title toc-ignore">DisImpact Tutorial</h1>
 <h3 class="author">Vinh Nguyen</h3>
-<h3 class="date">2022-02-17</h3>
+<h3 class="date">2022-05-17</h3>
 </div>
 </header>
 
@@ -164,17 +161,26 @@ code span.ot { color: #007020; }
 <div id="TOC" class="toc">
 <div class="inner">
 <ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#install-package">Install Package</a></li>
-<li><a href="#load-packages">Load Packages</a></li>
-<li><a href="#load-toy-student-equity-data">Load toy student equity data</a></li>
-<li><a href="#percentage-point-gap-ppg-method">Percentage point gap (PPG) method</a></li>
-<li><a href="#proportionality-index-method">Proportionality index method</a></li>
-<li><a href="#index-method">80% index method</a></li>
-<li><a href="#when-dealing-with-a-non-success-variable-like-drop-out-or-probation">When dealing with a non-success variable like drop-out or probation</a></li>
-<li><a href="#transformations-on-the-fly">Transformations on the fly</a></li>
-<li><a href="#calculate-di-for-many-variables-and-groups">Calculate DI for many variables and groups</a></li>
-<li><a href="#appendix-r-and-r-package-versions">Appendix: R and R Package Versions</a></li>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#install-package" id="toc-install-package">Install
+Package</a></li>
+<li><a href="#load-packages" id="toc-load-packages">Load
+Packages</a></li>
+<li><a href="#load-toy-student-equity-data" id="toc-load-toy-student-equity-data">Load toy student equity
+data</a></li>
+<li><a href="#percentage-point-gap-ppg-method" id="toc-percentage-point-gap-ppg-method">Percentage point gap (PPG)
+method</a></li>
+<li><a href="#proportionality-index-method" id="toc-proportionality-index-method">Proportionality index
+method</a></li>
+<li><a href="#index-method" id="toc-index-method">80% index
+method</a></li>
+<li><a href="#when-dealing-with-a-non-success-variable-like-drop-out-or-probation" id="toc-when-dealing-with-a-non-success-variable-like-drop-out-or-probation">When
+dealing with a non-success variable like drop-out or probation</a></li>
+<li><a href="#transformations-on-the-fly" id="toc-transformations-on-the-fly">Transformations on the fly</a></li>
+<li><a href="#calculate-di-for-many-variables-and-groups" id="toc-calculate-di-for-many-variables-and-groups">Calculate DI for
+many variables and groups</a></li>
+<li><a href="#appendix-r-and-r-package-versions" id="toc-appendix-r-and-r-package-versions">Appendix: R and R Package
+Versions</a></li>
 </ul>
 </div>
 </div>
@@ -184,34 +190,40 @@ code span.ot { color: #007020; }
     <section id="main-content">
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>The <code>DisImpact</code> R package contains functions that help in determining disproportionate impact (DI) based on the following methodologies:</p>
+<p>The <code>DisImpact</code> R package contains functions that help in
+determining disproportionate impact (DI) based on the following
+methodologies:</p>
 <ol style="list-style-type: decimal">
-<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/About-Us/Divisions/Digital-Innovation-and-Infrastructure/Research/Files/PercentagePointGapMethod2017.ashx">percentage point gap</a> (PPG) method,</li>
-<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf">proportionality index</a> method (method #1 in reference), and</li>
-<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf">80% index</a> method (method #2 in reference).</li>
+<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/About-Us/Divisions/Digital-Innovation-and-Infrastructure/Research/Files/PercentagePointGapMethod2017.ashx">percentage
+point gap</a> (PPG) method,</li>
+<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf">proportionality
+index</a> method (method #1 in reference), and</li>
+<li><a href="https://www.cccco.edu/-/media/CCCCO-Website/Files/DII/guidelines-for-measuring-disproportionate-impact-in-equity-plans-tfa-ada.pdf">80%
+index</a> method (method #2 in reference).</li>
 </ol>
 </div>
 <div id="install-package" class="section level1">
 <h1>Install Package</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># From CRAN (Official)</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">install.packages</span>(<span class="st">&#39;DisImpact&#39;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># From github (Development)</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;vinhdizzo/DisImpact&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From CRAN (Official)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&#39;DisImpact&#39;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># From github (Development)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;vinhdizzo/DisImpact&#39;</span>)</span></code></pre></div>
 </div>
 <div id="load-packages" class="section level1">
 <h1>Load Packages</h1>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(DisImpact)</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="kw">library</span>(dplyr) <span class="co"># Ease in manipulations with data frames</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DisImpact)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># Ease in manipulations with data frames</span></span></code></pre></div>
 </div>
 <div id="load-toy-student-equity-data" class="section level1">
 <h1>Load toy student equity data</h1>
-<p>To illustrate the functionality of the package, let’s load a toy data set:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Load fake data set</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">data</span>(student_equity)</span>
-<span id="cb3-3"><a href="#cb3-3"></a></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="co"># Print first few observations</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">head</span>(student_equity)</span></code></pre></div>
+<p>To illustrate the functionality of the package, let’s load a toy data
+set:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load fake data set</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(student_equity)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print first few observations</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(student_equity)</span></code></pre></div>
 <pre><code>##         Ethnicity Gender Cohort Transfer Cohort_Math Math Cohort_English
 ## 1 Native American Female   2017        0        2017    1           2017
 ## 2 Native American Female   2017        0        2018    1             NA
@@ -261,18 +273,20 @@ code span.ot { color: #007020; }
 ## 4                     0                            0
 ## 5                     0                            0
 ## 6                     0                            0</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># For description of data set</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="co">## ?student_equity</span></span></code></pre></div>
-<p>For a description of the <code>student_equity</code> data set, type <code>?student_equity</code> in the R console.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For description of data set</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## ?student_equity</span></span></code></pre></div>
+<p>For a description of the <code>student_equity</code> data set, type
+<code>?student_equity</code> in the R console.</p>
 <p>The toy data set can be summarized as follows:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Summarize toy data</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">dim</span>(student_equity)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize toy data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(student_equity)</span></code></pre></div>
 <pre><code>## [1] 20000    24</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>dSumm &lt;-<span class="st"> </span>student_equity <span class="op">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="st">  </span><span class="kw">group_by</span>(Cohort, Ethnicity) <span class="op">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">n=</span><span class="kw">n</span>(), <span class="dt">Transfer_Rate=</span><span class="kw">mean</span>(Transfer))</span></code></pre></div>
-<pre><code>## `summarise()` has grouped output by &#39;Cohort&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>dSumm <span class="co">## This is a summarized version of the data set</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dSumm <span class="ot">&lt;-</span> student_equity <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Cohort, Ethnicity) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n=</span><span class="fu">n</span>(), <span class="at">Transfer_Rate=</span><span class="fu">mean</span>(Transfer))</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;Cohort&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dSumm <span class="do">## This is a summarized version of the data set</span></span></code></pre></div>
 <pre><code>## # A tibble: 12 x 4
 ## # Groups:   Cohort [2]
 ##    Cohort Ethnicity           n Transfer_Rate
@@ -292,9 +306,10 @@ code span.ot { color: #007020; }
 </div>
 <div id="percentage-point-gap-ppg-method" class="section level1">
 <h1>Percentage point gap (PPG) method</h1>
-<p><code>di_ppg</code> is the main work function, and it can take on vectors or column names the tidy way:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Vector</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p><code>di_ppg</code> is the main work function, and it can take on
+vectors or column names the tidy way:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333    0.5264         overall 0.03000000
 ## 2           Black 2000     607 0.3035000    0.5264         overall 0.03000000
@@ -316,9 +331,9 @@ code span.ot { color: #007020; }
 ## 4                         23
 ## 5                         28
 ## 6                          0</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Tidy and column reference</span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy and column reference</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333    0.5264         overall 0.03000000
 ## 2           Black 2000     607 0.3035000    0.5264         overall 0.03000000
@@ -340,11 +355,14 @@ code span.ot { color: #007020; }
 ## 4                         23
 ## 5                         28
 ## 6                          0</code></pre>
-<p>For a description of the <code>di_ppg</code> function, including both function arguments and returned results, type <code>?di_ppg</code> in the R console.</p>
-<p>Sometimes, one might want to break out the DI calculation by cohort:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># Cohort</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>For a description of the <code>di_ppg</code> function, including both
+function arguments and returned results, type <code>?di_ppg</code> in
+the R console.</p>
+<p>Sometimes, one might want to break out the DI calculation by
+cohort:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cohort</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333    0.5140         overall
 ## 2    2017           Black 1000     310 0.3100000    0.5140         overall
@@ -384,9 +402,13 @@ code span.ot { color: #007020; }
 ## 10                         28
 ## 11                         19
 ## 12                          0</code></pre>
-<p><code>di_ppg</code> is also applicable to summarized data; just pass the counts to <code>success</code> and group size to <code>weight</code>. For example, we use the summarized data set, <code>dSumm</code>, and sample size <code>n</code>, in the following:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer_Rate<span class="op">*</span>n, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">weight=</span>n, <span class="dt">data=</span>dSumm) <span class="op">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p><code>di_ppg</code> is also applicable to summarized data; just pass
+the counts to <code>success</code> and group size to
+<code>weight</code>. For example, we use the summarized data set,
+<code>dSumm</code>, and sample size <code>n</code>, in the
+following:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer_Rate<span class="sc">*</span>n, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">weight=</span>n, <span class="at">data=</span>dSumm) <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333    0.5140         overall
 ## 2    2017           Black 1000     310 0.3100000    0.5140         overall
@@ -426,10 +448,16 @@ code span.ot { color: #007020; }
 ## 10                         28
 ## 11                         19
 ## 12                          0</code></pre>
-<p>By default, <code>di_ppg</code> uses the overall success rate as the reference rate for comparison (default: <code>reference=&#39;overall&#39;</code>). The <code>reference</code> argument also accepts <code>&#39;hpg&#39;</code> (highest performing group success rate as the reference rate), <code>&#39;all but current&#39;</code> (success rate of all groups combined excluding the comparison group), or a group value from <code>group</code>.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Reference: Highest performing group</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">reference=</span><span class="st">&#39;hpg&#39;</span>, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>By default, <code>di_ppg</code> uses the overall success rate as the
+reference rate for comparison (default:
+<code>reference=&#39;overall&#39;</code>). The <code>reference</code> argument
+also accepts <code>&#39;hpg&#39;</code> (highest performing group success rate
+as the reference rate), <code>&#39;all but current&#39;</code> (success rate of
+all groups combined excluding the comparison group), or a group value
+from <code>group</code>.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference: Highest performing group</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="st">&#39;hpg&#39;</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6873333             hpg
 ## 2    2017           Black 1000     310 0.3100000 0.6873333             hpg
@@ -469,9 +497,9 @@ code span.ot { color: #007020; }
 ## 10                        130
 ## 11                         40
 ## 12                        381</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># Reference: All but current (PPG minus 1)</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">reference=</span><span class="st">&#39;all but current&#39;</span>, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference: All but current (PPG minus 1)</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="st">&#39;all but current&#39;</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.4397143 all but current
 ## 2    2017           Black 1000     310 0.3100000 0.5366667 all but current
@@ -511,9 +539,9 @@ code span.ot { color: #007020; }
 ## 10                         29
 ## 11                         20
 ## 12                          0</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co"># Reference: custom group</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">reference=</span><span class="st">&#39;White&#39;</span>, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference: custom group</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="st">&#39;White&#39;</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6038235           White
 ## 2    2017           Black 1000     310 0.3100000 0.6038235           White
@@ -553,8 +581,8 @@ code span.ot { color: #007020; }
 ## 10                         74
 ## 11                         29
 ## 12                          0</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">reference=</span><span class="st">&#39;Asian&#39;</span>, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb26-2"><a href="#cb26-2"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="st">&#39;Asian&#39;</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6873333           Asian
 ## 2    2017           Black 1000     310 0.3100000 0.6873333           Asian
@@ -594,10 +622,15 @@ code span.ot { color: #007020; }
 ## 10                        130
 ## 11                         40
 ## 12                        381</code></pre>
-<p>The user could also pass in custom reference points for comparison (e.g., a state-wide rate). <code>di_ppg</code> accepts either a single reference point to be used or a vector of reference points, one for each cohort. For the latter, the vector of reference points will be taken to correspond to the <code>cohort</code> variable, alphabetically ordered.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co"># With custom reference (single)</span></span>
-<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">reference=</span><span class="fl">0.54</span>, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb28-3"><a href="#cb28-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>The user could also pass in custom reference points for comparison
+(e.g., a state-wide rate). <code>di_ppg</code> accepts either a single
+reference point to be used or a vector of reference points, one for each
+cohort. For the latter, the vector of reference points will be taken to
+correspond to the <code>cohort</code> variable, alphabetically
+ordered.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With custom reference (single)</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">reference=</span><span class="fl">0.54</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333      0.54         numeric 0.03000000
 ## 2           Black 2000     607 0.3035000      0.54         numeric 0.03000000
@@ -619,9 +652,9 @@ code span.ot { color: #007020; }
 ## 4                         37
 ## 5                         31
 ## 6                          0</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co"># With custom reference (multiple)</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">reference=</span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.55</span>), <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With custom reference (multiple)</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.55</span>), <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333      0.50         numeric
 ## 2    2017           Black 1000     310 0.3100000      0.50         numeric
@@ -661,15 +694,21 @@ code span.ot { color: #007020; }
 ## 10                         34
 ## 11                         21
 ## 12                          0</code></pre>
-<p>Disproportionate impact using the PPG relies on calculating the margine margin of error (MOE) pertaining around the success rate. The MOE calculated in <code>di_ppg</code> has 2 underlying assumptions (defaults):</p>
+<p>Disproportionate impact using the PPG relies on calculating the
+margine margin of error (MOE) pertaining around the success rate. The
+MOE calculated in <code>di_ppg</code> has 2 underlying assumptions
+(defaults):</p>
 <ol style="list-style-type: decimal">
 <li>the minimum MOE returned is 0.03, and</li>
-<li>using 0.50 as the proportion in the margin of error formula, <span class="math inline">\(1.96 \times \sqrt{\hat{p} (1-\hat{p}) / n}\)</span>.</li>
+<li>using 0.50 as the proportion in the margin of error formula, <span class="math inline">\(1.96 \times \sqrt{\hat{p} (1-\hat{p}) /
+n}\)</span>.</li>
 </ol>
-<p>To override 1, the user could specify <code>min_moe</code> in <code>di_ppg</code>. To override 2, the user could specify <code>use_prop_in_moe=TRUE</code> in <code>di_ppg</code>.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co"># min_moe</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity, <span class="dt">min_moe=</span><span class="fl">0.02</span>) <span class="op">%&gt;%</span></span>
-<span id="cb32-3"><a href="#cb32-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>To override 1, the user could specify <code>min_moe</code> in
+<code>di_ppg</code>. To override 2, the user could specify
+<code>use_prop_in_moe=TRUE</code> in <code>di_ppg</code>.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># min_moe</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity, <span class="at">min_moe=</span><span class="fl">0.02</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333    0.5264         overall 0.02000000
 ## 2           Black 2000     607 0.3035000    0.5264         overall 0.02191347
@@ -691,9 +730,9 @@ code span.ot { color: #007020; }
 ## 4                         23
 ## 5                         28
 ## 6                          0</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="co"># use_prop_in_moe</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity, <span class="dt">min_moe=</span><span class="fl">0.02</span>, <span class="dt">use_prop_in_moe=</span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb34-3"><a href="#cb34-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use_prop_in_moe</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity, <span class="at">min_moe=</span><span class="fl">0.02</span>, <span class="at">use_prop_in_moe=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333    0.5264         overall 0.02000000
 ## 2           Black 2000     607 0.3035000    0.5264         overall 0.02015028
@@ -715,10 +754,16 @@ code span.ot { color: #007020; }
 ## 4                         23
 ## 5                         28
 ## 6                          0</code></pre>
-<p>In cases where the proportion is used in calculating MOE, an observed proportion of 0 or 1 would lead to a zero MOE. To account for these scenarios, the user could leverage the <code>prop_sub_0</code> and <code>prop_sub_1</code> parameters in <code>di_ppg</code> and <code>ppg_moe</code> as substitutes. These parameters default to <code>0.5</code>, which maximizes the MOE (making it more difficult to declare disproportionate impact).</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="co"># Set Native American to have have zero transfers and see what the results</span></span>
-<span id="cb36-2"><a href="#cb36-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">Transfer=</span><span class="kw">ifelse</span>(Ethnicity<span class="op">==</span><span class="st">&#39;Native American&#39;</span>, <span class="dv">0</span>, Transfer)), <span class="dt">use_prop_in_moe=</span><span class="ot">TRUE</span>, <span class="dt">prop_sub_0=</span><span class="fl">0.1</span>, <span class="dt">prop_sub_1=</span><span class="fl">0.9</span>) <span class="op">%&gt;%</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>In cases where the proportion is used in calculating MOE, an observed
+proportion of 0 or 1 would lead to a zero MOE. To account for these
+scenarios, the user could leverage the <code>prop_sub_0</code> and
+<code>prop_sub_1</code> parameters in <code>di_ppg</code> and
+<code>ppg_moe</code> as substitutes. These parameters default to
+<code>0.5</code>, which maximizes the MOE (making it more difficult to
+declare disproportionate impact).</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set Native American to have have zero transfers and see what the results</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">Transfer=</span><span class="fu">ifelse</span>(Ethnicity<span class="sc">==</span><span class="st">&#39;Native American&#39;</span>, <span class="dv">0</span>, Transfer)), <span class="at">use_prop_in_moe=</span><span class="cn">TRUE</span>, <span class="at">prop_sub_0=</span><span class="fl">0.1</span>, <span class="at">prop_sub_1=</span><span class="fl">0.9</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>## Warning in ppg_moe(n = n, proportion = pct, min_moe = min_moe, prop_sub_0 =
 ## prop_sub_0, : The vector `proportion` contains 0. This will lead to a zero MOE.
 ## `prop_sub_0=0.1` will be used in calculating the MOE for these cases.</code></pre>
@@ -746,10 +791,11 @@ code span.ot { color: #007020; }
 </div>
 <div id="proportionality-index-method" class="section level1">
 <h1>Proportionality index method</h1>
-<p><code>di_prop_index</code> is the main work function for this method, and it can take on vectors or column names the tidy way:</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># Without cohort</span></span>
-<span id="cb39-2"><a href="#cb39-2"></a><span class="co">## Vector</span></span>
-<span id="cb39-3"><a href="#cb39-3"></a><span class="kw">di_prop_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p><code>di_prop_index</code> is the main work function for this method,
+and it can take on vectors or column names the tidy way:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Without cohort</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Vector</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">di_prop_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success pct_success pct_group di_prop_index di_indicator
 ## 1           Asian 6000    4292 0.407674772      0.30     1.3589159            0
 ## 2           Black 2000     607 0.057655775      0.10     0.5765578            1
@@ -764,9 +810,9 @@ code span.ot { color: #007020; }
 ## 4                     0                         24
 ## 5                     7                         28
 ## 6                     0                          0</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co">## Tidy and column reference</span></span>
-<span id="cb41-2"><a href="#cb41-2"></a><span class="kw">di_prop_index</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb41-3"><a href="#cb41-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tidy and column reference</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_prop_index</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success pct_success pct_group di_prop_index di_indicator
 ## 1           Asian 6000    4292 0.407674772      0.30     1.3589159            0
 ## 2           Black 2000     607 0.057655775      0.10     0.5765578            1
@@ -781,9 +827,9 @@ code span.ot { color: #007020; }
 ## 4                     0                         24
 ## 5                     7                         28
 ## 6                     0                          0</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># With cohort</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a><span class="co">## Vector</span></span>
-<span id="cb43-3"><a href="#cb43-3"></a><span class="kw">di_prop_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity, <span class="dt">cohort=</span>student_equity<span class="op">$</span>Cohort) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With cohort</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Vector</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">di_prop_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity, <span class="at">cohort=</span>student_equity<span class="sc">$</span>Cohort) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success pct_success pct_group di_prop_index
 ## 1    2017           Asian 3000    2062 0.401167315      0.30     1.3372244
 ## 2    2017           Black 1000     310 0.060311284      0.10     0.6031128
@@ -810,9 +856,9 @@ code span.ot { color: #007020; }
 ## 10            0                     0                         29
 ## 11            1                     9                         20
 ## 12            0                     0                          0</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co">## Tidy and column reference</span></span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">di_prop_index</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb45-3"><a href="#cb45-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tidy and column reference</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_prop_index</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success pct_success pct_group di_prop_index
 ## 1    2017           Asian 3000    2062 0.401167315      0.30     1.3372244
 ## 2    2017           Black 1000     310 0.060311284      0.10     0.6031128
@@ -839,10 +885,16 @@ code span.ot { color: #007020; }
 ## 10            0                     0                         29
 ## 11            1                     9                         20
 ## 12            0                     0                          0</code></pre>
-<p>For a description of the <code>di_prop_index</code> function, including both function arguments and returned results, type <code>?di_prop_index</code> in the R console.</p>
-<p>Note that the referenced document describing this method does not recommend a threshold on the proportionality index for declaring disproportionate impact. The <code>di_prop_index</code> function uses <code>di_prop_index_cutoff=0.8</code> as the default threshold, which the user could change.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># Changing threshold for DI</span></span>
-<span id="cb47-2"><a href="#cb47-2"></a><span class="kw">di_prop_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity, <span class="dt">cohort=</span>student_equity<span class="op">$</span>Cohort, <span class="dt">di_prop_index_cutoff=</span><span class="fl">0.5</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p>For a description of the <code>di_prop_index</code> function,
+including both function arguments and returned results, type
+<code>?di_prop_index</code> in the R console.</p>
+<p>Note that the referenced document describing this method does not
+recommend a threshold on the proportionality index for declaring
+disproportionate impact. The <code>di_prop_index</code> function uses
+<code>di_prop_index_cutoff=0.8</code> as the default threshold, which
+the user could change.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Changing threshold for DI</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_prop_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity, <span class="at">cohort=</span>student_equity<span class="sc">$</span>Cohort, <span class="at">di_prop_index_cutoff=</span><span class="fl">0.5</span>) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success pct_success pct_group di_prop_index
 ## 1    2017           Asian 3000    2062 0.401167315      0.30     1.3372244
 ## 2    2017           Black 1000     310 0.060311284      0.10     0.6031128
@@ -872,10 +924,11 @@ code span.ot { color: #007020; }
 </div>
 <div id="index-method" class="section level1">
 <h1>80% index method</h1>
-<p><code>di_80_index</code> is the main work function for this method, and it can take on vectors or column names the tidy way:</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="co"># Without cohort</span></span>
-<span id="cb49-2"><a href="#cb49-2"></a><span class="co">## Vector</span></span>
-<span id="cb49-3"><a href="#cb49-3"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p><code>di_80_index</code> is the main work function for this method,
+and it can take on vectors or column names the tidy way:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Without cohort</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Vector</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group di_80_index
 ## 1           Asian 6000    4292 0.7153333 0.7153333           Asian   1.0000000
 ## 2           Black 2000     607 0.3035000 0.7153333           Asian   0.4242777
@@ -890,9 +943,9 @@ code span.ot { color: #007020; }
 ## 4            1                    69                        212
 ## 5            1                    37                         66
 ## 6            0                     0                        665</code></pre>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="co">## Tidy and column reference</span></span>
-<span id="cb51-2"><a href="#cb51-2"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb51-3"><a href="#cb51-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tidy and column reference</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group di_80_index
 ## 1           Asian 6000    4292 0.7153333 0.7153333           Asian   1.0000000
 ## 2           Black 2000     607 0.3035000 0.7153333           Asian   0.4242777
@@ -907,9 +960,9 @@ code span.ot { color: #007020; }
 ## 4            1                    69                        212
 ## 5            1                    37                         66
 ## 6            0                     0                        665</code></pre>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co"># With cohort</span></span>
-<span id="cb53-2"><a href="#cb53-2"></a><span class="co">## Vector</span></span>
-<span id="cb53-3"><a href="#cb53-3"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity, <span class="dt">cohort=</span>student_equity<span class="op">$</span>Cohort) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With cohort</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Vector</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity, <span class="at">cohort=</span>student_equity<span class="sc">$</span>Cohort) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6873333           Asian
 ## 2    2017           Black 1000     310 0.3100000 0.6873333           Asian
@@ -936,9 +989,9 @@ code span.ot { color: #007020; }
 ## 10   0.6511211            1                    56                        130
 ## 11   0.4708520            1                    25                         40
 ## 12   0.8495120            0                     0                        381</code></pre>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="co">## Tidy and column reference</span></span>
-<span id="cb55-2"><a href="#cb55-2"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">cohort=</span>Cohort, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb55-3"><a href="#cb55-3"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Tidy and column reference</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6873333           Asian
 ## 2    2017           Black 1000     310 0.3100000 0.6873333           Asian
@@ -965,10 +1018,15 @@ code span.ot { color: #007020; }
 ## 10   0.6511211            1                    56                        130
 ## 11   0.4708520            1                    25                         40
 ## 12   0.8495120            0                     0                        381</code></pre>
-<p>For a description of the <code>di_80_index</code> function, including both function arguments and returned results, type <code>?di_80_index</code> in the R console.</p>
-<p>By default, <code>di_80_index</code> uses the group with the highest success rate as reference in calculating the index. One could specify the the comparison group using the <code>reference_group</code> argument (a value from <code>group</code>).</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="co"># Changing reference group</span></span>
-<span id="cb57-2"><a href="#cb57-2"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity, <span class="dt">cohort=</span>student_equity<span class="op">$</span>Cohort, <span class="dt">reference_group=</span><span class="st">&#39;White&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p>For a description of the <code>di_80_index</code> function, including
+both function arguments and returned results, type
+<code>?di_80_index</code> in the R console.</p>
+<p>By default, <code>di_80_index</code> uses the group with the highest
+success rate as reference in calculating the index. One could specify
+the the comparison group using the <code>reference_group</code> argument
+(a value from <code>group</code>).</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Changing reference group</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity, <span class="at">cohort=</span>student_equity<span class="sc">$</span>Cohort, <span class="at">reference_group=</span><span class="st">&#39;White&#39;</span>) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6038235           White
 ## 2    2017           Black 1000     310 0.3100000 0.6038235           White
@@ -995,9 +1053,12 @@ code span.ot { color: #007020; }
 ## 10   0.7664648            1                    11                         74
 ## 11   0.5542618            1                    16                         29
 ## 12   1.0000000            0                     0                          0</code></pre>
-<p>By default, <code>di_80_index</code> uses 80% (<code>di_80_index_cutoff=0.80</code>) as the default threshold for declaring disproportionate impact. One could override this using another threshold via the <code>di_80_index_cutoff</code> argument.</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="co"># Changing threshold for DI</span></span>
-<span id="cb59-2"><a href="#cb59-2"></a><span class="kw">di_80_index</span>(<span class="dt">success=</span>student_equity<span class="op">$</span>Transfer, <span class="dt">group=</span>student_equity<span class="op">$</span>Ethnicity, <span class="dt">cohort=</span>student_equity<span class="op">$</span>Cohort, <span class="dt">di_80_index_cutoff=</span><span class="fl">0.50</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p>By default, <code>di_80_index</code> uses 80%
+(<code>di_80_index_cutoff=0.80</code>) as the default threshold for
+declaring disproportionate impact. One could override this using another
+threshold via the <code>di_80_index_cutoff</code> argument.</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Changing threshold for DI</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_80_index</span>(<span class="at">success=</span>student_equity<span class="sc">$</span>Transfer, <span class="at">group=</span>student_equity<span class="sc">$</span>Ethnicity, <span class="at">cohort=</span>student_equity<span class="sc">$</span>Cohort, <span class="at">di_80_index_cutoff=</span><span class="fl">0.50</span>) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
 ## 1    2017           Asian 3000    2062 0.6873333 0.6873333           Asian
 ## 2    2017           Black 1000     310 0.3100000 0.6873333           Asian
@@ -1026,13 +1087,21 @@ code span.ot { color: #007020; }
 ## 12   0.8495120            0                     0                        381</code></pre>
 </div>
 <div id="when-dealing-with-a-non-success-variable-like-drop-out-or-probation" class="section level1">
-<h1>When dealing with a non-success variable like drop-out or probation</h1>
-<p>All methods and functions implemented in the <code>DisImpact</code> package treat outcomes as positive: 1 is desired over 0 (higher rate is better, lower rate indicates disparity). The choice of the name <code>success</code> in the functions’ arguments is intentional to remind the user of this.</p>
-<p>Suppose we have a variable that indicates something negative (e.g., a flag for students on academic probation). We could calculate DI on the converse of it by using the <code>!</code> (logical negation) operator:</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="co">## di_ppg(success=!Probation, group=Ethnicity, data=student_equity) %&gt;%</span></span>
-<span id="cb61-2"><a href="#cb61-2"></a><span class="co">##   as.data.frame ## If there were a Probation variable</span></span>
-<span id="cb61-3"><a href="#cb61-3"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span><span class="op">!</span>Transfer, <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb61-4"><a href="#cb61-4"></a><span class="st">  </span>as.data.frame <span class="co">## Illustrating the point with `!`</span></span></code></pre></div>
+<h1>When dealing with a non-success variable like drop-out or
+probation</h1>
+<p>All methods and functions implemented in the <code>DisImpact</code>
+package treat outcomes as positive: 1 is desired over 0 (higher rate is
+better, lower rate indicates disparity). The choice of the name
+<code>success</code> in the functions’ arguments is intentional to
+remind the user of this.</p>
+<p>Suppose we have a variable that indicates something negative (e.g., a
+flag for students on academic probation). We could calculate DI on the
+converse of it by using the <code>!</code> (logical negation)
+operator:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="do">## di_ppg(success=!Probation, group=Ethnicity, data=student_equity) %&gt;%</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   as.data.frame ## If there were a Probation variable</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span><span class="sc">!</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  as.data.frame <span class="do">## Illustrating the point with `!`</span></span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    1708 0.2846667    0.4736         overall 0.03000000
 ## 2           Black 2000    1393 0.6965000    0.4736         overall 0.03000000
@@ -1057,36 +1126,37 @@ code span.ot { color: #007020; }
 </div>
 <div id="transformations-on-the-fly" class="section level1">
 <h1>Transformations on the fly</h1>
-<p>We can compute the success, group, and cohort variables on the fly:</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="co"># Transform success</span></span>
-<span id="cb63-2"><a href="#cb63-2"></a>a &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">size=</span><span class="kw">nrow</span>(student_equity), <span class="dt">replace=</span><span class="ot">TRUE</span>, <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
-<span id="cb63-3"><a href="#cb63-3"></a><span class="kw">mean</span>(a)</span></code></pre></div>
-<pre><code>## [1] 0.052</code></pre>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span><span class="kw">pmax</span>(Transfer, a), <span class="dt">group=</span>Ethnicity, <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span></span>
-<span id="cb65-2"><a href="#cb65-2"></a><span class="st">  </span>as.data.frame</span></code></pre></div>
+<p>We can compute the success, group, and cohort variables on the
+fly:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform success</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="fu">nrow</span>(student_equity), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(a)</span></code></pre></div>
+<pre><code>## [1] 0.0497</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span><span class="fu">pmax</span>(Transfer, a), <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
-## 1           Asian 6000    4383 0.7305000    0.5509         overall 0.03000000
-## 2           Black 2000     667 0.3335000    0.5509         overall 0.03000000
-## 3        Hispanic 4000    1003 0.2507500    0.5509         overall 0.03000000
-## 4 Multi-Ethnicity 1000     537 0.5370000    0.5509         overall 0.03099032
-## 5 Native American  200      83 0.4150000    0.5509         overall 0.06929646
-## 6           White 6800    4345 0.6389706    0.5509         overall 0.03000000
+## 1           Asian 6000    4368 0.7280000    0.5502         overall 0.03000000
+## 2           Black 2000     682 0.3410000    0.5502         overall 0.03000000
+## 3        Hispanic 4000    1013 0.2532500    0.5502         overall 0.03000000
+## 4 Multi-Ethnicity 1000     531 0.5310000    0.5502         overall 0.03099032
+## 5 Native American  200      84 0.4200000    0.5502         overall 0.06929646
+## 6           White 6800    4326 0.6361765    0.5502         overall 0.03000000
 ##      pct_lo    pct_hi di_indicator success_needed_not_di
-## 1 0.7005000 0.7605000            0                     0
-## 2 0.3035000 0.3635000            1                   375
-## 3 0.2207500 0.2807500            1                  1081
-## 4 0.5060097 0.5679903            0                     0
-## 5 0.3457035 0.4842965            1                    14
-## 6 0.6089706 0.6689706            0                     0
+## 1 0.6980000 0.7580000            0                     0
+## 2 0.3110000 0.3710000            1                   359
+## 3 0.2232500 0.2832500            1                  1068
+## 4 0.5000097 0.5619903            0                     0
+## 5 0.3507035 0.4892965            1                    13
+## 6 0.6061765 0.6661765            0                     0
 ##   success_needed_full_parity
 ## 1                          0
-## 2                        435
-## 3                       1201
-## 4                         14
-## 5                         28
+## 2                        419
+## 3                       1188
+## 4                         20
+## 5                         27
 ## 6                          0</code></pre>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="co"># Collapse Black and Hispanic</span></span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="kw">di_ppg</span>(<span class="dt">success=</span>Transfer, <span class="dt">group=</span><span class="kw">ifelse</span>(Ethnicity <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Black&#39;</span>, <span class="st">&#39;Hispanic&#39;</span>), <span class="st">&#39;Black/Hispanic&#39;</span>, Ethnicity), <span class="dt">data=</span>student_equity) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collapse Black and Hispanic</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span><span class="fu">ifelse</span>(Ethnicity <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Black&#39;</span>, <span class="st">&#39;Hispanic&#39;</span>), <span class="st">&#39;Black/Hispanic&#39;</span>, Ethnicity), <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
 ## 1           Asian 6000    4292 0.7153333    0.5264         overall 0.03000000
 ## 2  Black/Hispanic 6000    1454 0.2423333    0.5264         overall 0.03000000
@@ -1108,9 +1178,13 @@ code span.ot { color: #007020; }
 </div>
 <div id="calculate-di-for-many-variables-and-groups" class="section level1">
 <h1>Calculate DI for many variables and groups</h1>
-<p>It is often the case that the user desires to calculate disproportionate impact across many outcome variables and many disaggregation/group variables. The function <code>di_iterate</code> allows the user to specify a data set and the various variables to iterate across:</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="co"># Multiple group variables</span></span>
-<span id="cb69-2"><a href="#cb69-2"></a><span class="kw">di_iterate</span>(<span class="dt">data=</span>student_equity, <span class="dt">success_vars=</span><span class="kw">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="dt">group_vars=</span><span class="kw">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="dt">cohort_vars=</span><span class="kw">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="dt">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>as.data.frame</span></code></pre></div>
+<p>It is often the case that the user desires to calculate
+disproportionate impact across many outcome variables and many
+disaggregation/group variables. The function <code>di_iterate</code>
+allows the user to specify a data set and the various variables to
+iterate across:</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple group variables</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_iterate</span>(<span class="at">data=</span>student_equity, <span class="at">success_vars=</span><span class="fu">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="at">group_vars=</span><span class="fu">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="at">cohort_vars=</span><span class="fu">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="at">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span>) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    success_variable cohort_variable cohort disaggregation           group     n
 ## 1          Transfer          Cohort   2017      Ethnicity           Asian  3000
 ## 2          Transfer          Cohort   2017      Ethnicity           Black  1000
@@ -1258,12 +1332,12 @@ code span.ot { color: #007020; }
 ## 18                              0                                   0
 ## 19                              0                                   0
 ## 20                              0                                   0</code></pre>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="co"># Multiple group variables and different reference groups</span></span>
-<span id="cb71-2"><a href="#cb71-2"></a></span>
-<span id="cb71-3"><a href="#cb71-3"></a><span class="kw">bind_rows</span>(</span>
-<span id="cb71-4"><a href="#cb71-4"></a>  <span class="kw">di_iterate</span>(<span class="dt">data=</span>student_equity, <span class="dt">success_vars=</span><span class="kw">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="dt">group_vars=</span><span class="kw">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="dt">cohort_vars=</span><span class="kw">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="dt">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span>)</span>
-<span id="cb71-5"><a href="#cb71-5"></a>  , <span class="kw">di_iterate</span>(<span class="dt">data=</span>student_equity, <span class="dt">success_vars=</span><span class="kw">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="dt">group_vars=</span><span class="kw">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="dt">cohort_vars=</span><span class="kw">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="dt">ppg_reference_groups=</span><span class="kw">c</span>(<span class="st">&#39;White&#39;</span>, <span class="st">&#39;Male&#39;</span>), <span class="dt">include_non_disagg_results=</span><span class="ot">FALSE</span>) <span class="co"># include_non_disagg_results = FALSE: Already have this scenario in Overall run</span></span>
-<span id="cb71-6"><a href="#cb71-6"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple group variables and different reference groups</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">di_iterate</span>(<span class="at">data=</span>student_equity, <span class="at">success_vars=</span><span class="fu">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="at">group_vars=</span><span class="fu">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="at">cohort_vars=</span><span class="fu">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="at">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span>)</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  , <span class="fu">di_iterate</span>(<span class="at">data=</span>student_equity, <span class="at">success_vars=</span><span class="fu">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="at">group_vars=</span><span class="fu">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="at">cohort_vars=</span><span class="fu">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="at">ppg_reference_groups=</span><span class="fu">c</span>(<span class="st">&#39;White&#39;</span>, <span class="st">&#39;Male&#39;</span>), <span class="at">include_non_disagg_results=</span><span class="cn">FALSE</span>) <span class="co"># include_non_disagg_results = FALSE: Already have this scenario in Overall run</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## # A tibble: 38 x 25
 ##    success_variable cohort_variable cohort disaggregation group        n success
 ##    &lt;chr&gt;            &lt;chr&gt;            &lt;int&gt; &lt;chr&gt;          &lt;chr&gt;    &lt;dbl&gt;   &lt;int&gt;
@@ -1283,18 +1357,21 @@ code span.ot { color: #007020; }
 ## #   success_needed_full_parity_ppg &lt;dbl&gt;, di_prop_index &lt;dbl&gt;,
 ## #   di_indicator_prop_index &lt;dbl&gt;, success_needed_not_di_prop_index &lt;dbl&gt;,
 ## #   success_needed_full_parity_prop_index &lt;dbl&gt;,
-## #   di_80_index_reference_group &lt;chr&gt;, di_80_index &lt;dbl&gt;,
-## #   di_indicator_80_index &lt;dbl&gt;, success_needed_not_di_80_index &lt;dbl&gt;,
-## #   success_needed_full_parity_80_index &lt;dbl&gt;</code></pre>
-<p>There is a separate <a href="Scaling-DI-Calculations.html">vignette</a> that explains how one might leverage <code>di_iterate</code> for rapid dashboard development and deployment with disaggregation and disproportionate impact features.</p>
+## #   di_80_index_reference_group &lt;chr&gt;, di_80_index &lt;dbl&gt;, ...</code></pre>
+<p>There is a separate <a href="Scaling-DI-Calculations.html">vignette</a> that explains how one
+might leverage <code>di_iterate</code> for rapid dashboard development
+and deployment with disaggregation and disproportionate impact
+features.</p>
 </div>
 <div id="appendix-r-and-r-package-versions" class="section level1">
 <h1>Appendix: R and R Package Versions</h1>
-<p>This vignette was generated using an R session with the following packages. There may be some discrepancies when the reader replicates the code caused by version mismatch.</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<p>This vignette was generated using an R session with the following
+packages. There may be some discrepancies when the reader replicates the
+code caused by version mismatch.</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.0.2 (2020-06-22)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 17763)
+## Running under: Windows 10 x64 (build 19042)
 ## 
 ## Matrix products: default
 ## 
@@ -1309,20 +1386,21 @@ code span.ot { color: #007020; }
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] forcats_0.5.1    scales_1.1.1     ggplot2_3.3.3    stringr_1.4.0   
-## [5] knitr_1.33       dplyr_1.0.6      DisImpact_0.0.16
+## [1] forcats_0.5.0    scales_1.1.1     ggplot2_3.3.2    stringr_1.4.0   
+## [5] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.17
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] pillar_1.6.1      bslib_0.2.5.1     compiler_4.0.2    jquerylib_0.1.4  
-##  [5] highr_0.9         prettydoc_0.4.1   tools_4.0.2       digest_0.6.27    
-##  [9] jsonlite_1.7.2    evaluate_0.14     lifecycle_1.0.0   tibble_3.1.2     
-## [13] gtable_0.3.0      pkgconfig_2.0.3   rlang_0.4.11      cli_3.1.0        
-## [17] yaml_2.2.1        xfun_0.23         withr_2.4.2       generics_0.1.0   
-## [21] vctrs_0.3.8       sass_0.4.0        grid_4.0.2        tidyselect_1.1.1 
-## [25] glue_1.4.2        R6_2.5.0          fansi_0.5.0       rmarkdown_2.9    
-## [29] farver_2.1.0      purrr_0.3.4       tidyr_1.1.3       magrittr_2.0.1   
-## [33] ellipsis_0.3.2    htmltools_0.5.1.1 colorspace_2.0-1  labeling_0.4.2   
-## [37] utf8_1.2.1        stringi_1.4.6     munsell_0.5.0     crayon_1.4.1</code></pre>
+##  [1] pillar_1.7.0     bslib_0.3.1      compiler_4.0.2   jquerylib_0.1.4 
+##  [5] highr_0.9        prettydoc_0.4.1  tools_4.0.2      digest_0.6.25   
+##  [9] jsonlite_1.5     evaluate_0.15    lifecycle_1.0.1  tibble_3.1.6    
+## [13] gtable_0.3.0     pkgconfig_2.0.3  rlang_1.0.1      cli_3.2.0       
+## [17] yaml_2.3.5       xfun_0.30        fastmap_1.1.0    withr_2.5.0     
+## [21] generics_0.1.2   vctrs_0.3.8      sass_0.4.1       grid_4.0.2      
+## [25] tidyselect_1.1.2 glue_1.6.1       R6_2.3.0         fansi_1.0.2     
+## [29] rmarkdown_2.14   farver_2.0.3     purrr_0.3.4      tidyr_1.2.0     
+## [33] magrittr_2.0.2   ellipsis_0.3.2   htmltools_0.5.2  colorspace_1.4-1
+## [37] labeling_0.3     utf8_1.2.2       stringi_1.4.6    munsell_0.5.0   
+## [41] crayon_1.5.0</code></pre>
 </div>
     </section>
   </div>

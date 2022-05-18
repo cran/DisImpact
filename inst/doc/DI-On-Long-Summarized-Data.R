@@ -104,6 +104,25 @@ di_summ_3 %>%
   head %>%
   as.data.frame
 
+## ----warning=FALSE------------------------------------------------------------
+# Example 4: By outcome, cohort; custom reference groups
+di_summ_4 <- di_iterate_on_long(data=d_relevant %>%
+                                  filter(subgroup1 != 'All Masked Values') %>% # some foster youth and vetans disaggregation have just a single All Masked Values row; removing these scenarios for purpose of illustration
+                                  mutate(custom_reference=ifelse(subgroup1 %in% c('White','Not Foster Youth', 'Not Veteran'), 1, 0)) # create a variable that flags the reference groups
+                                , num_var='value'
+                                , denom_var='denom'
+                                , disagg_var_col='disagg1'
+                                , group_var_col='subgroup1'
+                                , cohort_var_col='academicYear'
+                                , summarize_by_vars=c('categoryLabel', 'cohort')
+                                , custom_reference_group_flag_var='custom_reference' # Specify variable/flag for custom reference groups
+                                  )
+nrow(di_summ_4)
+
+di_summ_4 %>%
+  head %>%
+  as.data.frame
+
 ## -----------------------------------------------------------------------------
 sessionInfo()
 
