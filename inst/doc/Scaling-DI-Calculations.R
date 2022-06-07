@@ -287,5 +287,49 @@ dim(df_di_summary_long)
 ##   filter(FERPA_Block == 0)
 
 ## -----------------------------------------------------------------------------
+df_di_summary <- di_iterate(data=student_equity
+                          , success_vars=c('Math', 'English', 'Transfer')
+                          , group_vars=c('Ethnicity', 'Gender')
+                          , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+                          , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+                            ) %>%
+  suppressMessages
+
+## ----eval=FALSE---------------------------------------------------------------
+#  df_di_summary <- di_iterate(data=student_equity
+#                            , success_vars=c('Math', 'English', 'Transfer')
+#                            , group_vars=c('Ethnicity', 'Gender')
+#                            , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+#                            , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+#                            , parallel=TRUE
+#                            , parallel_n_cores=4
+#                              )
+
+## -----------------------------------------------------------------------------
+# Create a very large student data set
+n_college <- 200
+student_equity_big <- do.call('rbind', replicate(n_college, student_equity, simplify=FALSE)) # repeat student_equity data set n_college times
+student_equity_big$college <- rep(paste0('College ', 1:n_college), each=nrow(student_equity)) # College Name
+dim(student_equity_big)
+table(student_equity_big$college)
+
+## ----eval=FALSE---------------------------------------------------------------
+#  # Not run: user test on their own system
+#  # User should try to increase n_college to 800 or another large number if the system has a lot of memory
+#  # User should wrap following call with system.time() to time execution: parallel=FALSE, then parallel=TRUE, then parallel=TRUE and parallel_split_to_disk=TRUE
+#  
+#  # Parallel execution + writing to disk
+#  big_di_summary <- di_iterate(data=student_equity_big
+#                            , success_vars=c('Math', 'English', 'Transfer')
+#                            , group_vars=c('Ethnicity', 'Gender')
+#                            , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+#                            , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status', 'college') # Add college
+#                            , parallel=TRUE
+#                            # , parallel_n_cores=4 # when not specified, use the max number of cores
+#                            , parallel_split_to_disk=TRUE
+#                              )
+#  
+
+## -----------------------------------------------------------------------------
 sessionInfo()
 
