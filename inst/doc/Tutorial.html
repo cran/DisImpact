@@ -12,7 +12,7 @@
 
 <meta name="author" content="Vinh Nguyen" />
 
-<meta name="date" content="2022-06-07" />
+<meta name="date" content="2022-08-22" />
 
 <title>DisImpact Tutorial</title>
 
@@ -153,7 +153,7 @@ code span.ot { color: #007020; }
 <div class="inner">
 <h1 class="title toc-ignore">DisImpact Tutorial</h1>
 <h3 class="author">Vinh Nguyen</h3>
-<h3 class="date">2022-06-07</h3>
+<h3 class="date">2022-08-22</h3>
 </div>
 </header>
 
@@ -1131,29 +1131,29 @@ fly:</p>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform success</span></span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="fu">nrow</span>(student_equity), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(a)</span></code></pre></div>
-<pre><code>## [1] 0.04895</code></pre>
+<pre><code>## [1] 0.0532</code></pre>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span><span class="fu">pmax</span>(Transfer, a), <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
-## 1           Asian 6000    4366 0.7276667   0.55015         overall 0.03000000
-## 2           Black 2000     682 0.3410000   0.55015         overall 0.03000000
-## 3        Hispanic 4000    1001 0.2502500   0.55015         overall 0.03000000
-## 4 Multi-Ethnicity 1000     527 0.5270000   0.55015         overall 0.03099032
-## 5 Native American  200      82 0.4100000   0.55015         overall 0.06929646
-## 6           White 6800    4345 0.6389706   0.55015         overall 0.03000000
+## 1           Asian 6000    4376 0.7293333    0.5515         overall 0.03000000
+## 2           Black 2000     694 0.3470000    0.5515         overall 0.03000000
+## 3        Hispanic 4000    1009 0.2522500    0.5515         overall 0.03000000
+## 4 Multi-Ethnicity 1000     526 0.5260000    0.5515         overall 0.03099032
+## 5 Native American  200      85 0.4250000    0.5515         overall 0.06929646
+## 6           White 6800    4340 0.6382353    0.5515         overall 0.03000000
 ##      pct_lo    pct_hi di_indicator success_needed_not_di
-## 1 0.6976667 0.7576667            0                     0
-## 2 0.3110000 0.3710000            1                   359
-## 3 0.2202500 0.2802500            1                  1080
-## 4 0.4960097 0.5579903            0                     0
-## 5 0.3407035 0.4792965            1                    15
-## 6 0.6089706 0.6689706            0                     0
+## 1 0.6993333 0.7593333            0                     0
+## 2 0.3170000 0.3770000            1                   349
+## 3 0.2222500 0.2822500            1                  1077
+## 4 0.4950097 0.5569903            0                     0
+## 5 0.3557035 0.4942965            1                    12
+## 6 0.6082353 0.6682353            0                     0
 ##   success_needed_full_parity
 ## 1                          0
-## 2                        419
-## 3                       1200
-## 4                         24
-## 5                         29
+## 2                        410
+## 3                       1197
+## 4                         26
+## 5                         26
 ## 6                          0</code></pre>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collapse Black and Hispanic</span></span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span><span class="fu">ifelse</span>(Ethnicity <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Black&#39;</span>, <span class="st">&#39;Hispanic&#39;</span>), <span class="st">&#39;Black/Hispanic&#39;</span>, Ethnicity), <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
@@ -1371,7 +1371,7 @@ code caused by version mismatch.</p>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.0.2 (2020-06-22)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 19042)
+## Running under: Windows 10 x64 (build 19044)
 ## 
 ## Matrix products: default
 ## 
@@ -1387,21 +1387,21 @@ code caused by version mismatch.</p>
 ## 
 ## other attached packages:
 ## [1] forcats_0.5.0    scales_1.1.1     ggplot2_3.3.2    stringr_1.4.0   
-## [5] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.18
+## [5] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.19
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.8.3     pillar_1.7.0     bslib_0.3.1      compiler_4.0.2  
-##  [5] jquerylib_0.1.4  highr_0.9        prettydoc_0.4.1  tools_4.0.2     
-##  [9] digest_0.6.25    gtable_0.3.0     jsonlite_1.5     evaluate_0.15   
+##  [1] Rcpp_1.0.8.3     highr_0.9        pillar_1.7.0     bslib_0.3.1     
+##  [5] compiler_4.0.2   jquerylib_0.1.4  prettydoc_0.4.1  tools_4.0.2     
+##  [9] digest_0.6.25    gtable_0.3.0     jsonlite_1.7.0   evaluate_0.15   
 ## [13] lifecycle_1.0.1  tibble_3.1.6     fstcore_0.9.12   pkgconfig_2.0.3 
-## [17] rlang_1.0.1      cli_3.2.0        yaml_2.3.5       parallel_4.0.2  
-## [21] xfun_0.30        fastmap_1.1.0    withr_2.5.0      generics_0.1.2  
-## [25] vctrs_0.3.8      sass_0.4.1       grid_4.0.2       tidyselect_1.1.2
-## [29] glue_1.6.1       R6_2.3.0         fansi_1.0.2      rmarkdown_2.14  
-## [33] farver_2.0.3     purrr_0.3.4      tidyr_1.2.0      magrittr_2.0.2  
-## [37] ellipsis_0.3.2   htmltools_0.5.2  fst_0.9.8        colorspace_1.4-1
-## [41] labeling_0.3     utf8_1.2.2       stringi_1.4.6    munsell_0.5.0   
-## [45] crayon_1.5.0</code></pre>
+## [17] rlang_1.0.1      cli_3.2.0        DBI_1.1.0        yaml_2.3.5      
+## [21] parallel_4.0.2   xfun_0.30        fastmap_1.1.0    withr_2.5.0     
+## [25] generics_0.1.2   vctrs_0.3.8      sass_0.4.1       grid_4.0.2      
+## [29] tidyselect_1.1.2 glue_1.6.1       R6_2.3.0         fansi_1.0.2     
+## [33] rmarkdown_2.14   farver_2.0.3     tidyr_1.2.0      purrr_0.3.4     
+## [37] blob_1.2.1       magrittr_2.0.2   ellipsis_0.3.2   htmltools_0.5.2 
+## [41] fst_0.9.8        assertthat_0.2.1 colorspace_1.4-1 labeling_0.3    
+## [45] utf8_1.2.2       stringi_1.4.6    munsell_0.5.0    crayon_1.5.0</code></pre>
 </div>
     </section>
   </div>

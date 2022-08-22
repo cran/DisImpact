@@ -295,6 +295,43 @@ df_di_summary <- di_iterate(data=student_equity
                             ) %>%
   suppressMessages
 
+## ---- eval=FALSE--------------------------------------------------------------
+#  df_di_summary <- di_iterate(data=student_equity
+#                            , success_vars=c('Math', 'English', 'Transfer')
+#                            , group_vars=c('Ethnicity', 'Gender')
+#                            , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+#                            , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+#                              )
+
+## -----------------------------------------------------------------------------
+df_di_summary %>%
+  group_by(Ed_Goal, College_Status) %>%
+  tally
+
+## -----------------------------------------------------------------------------
+df_di_summary_not_deg <- di_iterate(data=student_equity
+                                  , success_vars=c('Math', 'English', 'Transfer')
+                                  , group_vars=c('Ethnicity', 'Gender')
+                                  , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+                                  , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+                                  , exclude_scenario_df=data.frame(Ed_Goal='Other')
+                            )
+df_di_summary_not_deg %>%
+  group_by(Ed_Goal, College_Status) %>%
+  tally
+
+## -----------------------------------------------------------------------------
+df_di_summary_not_deg_ftc <- di_iterate(data=student_equity
+                                  , success_vars=c('Math', 'English', 'Transfer')
+                                  , group_vars=c('Ethnicity', 'Gender')
+                                  , cohort_vars=c('Cohort_Math', 'Cohort_English', 'Cohort')
+                                  , scenario_repeat_by_vars=c('Ed_Goal', 'College_Status')
+                                  , exclude_scenario_df=data.frame(Ed_Goal='Other', College_Status='Other')
+                            )
+df_di_summary_not_deg_ftc %>%
+  group_by(Ed_Goal, College_Status) %>%
+  tally
+
 ## ----eval=FALSE---------------------------------------------------------------
 #  df_di_summary <- di_iterate(data=student_equity
 #                            , success_vars=c('Math', 'English', 'Transfer')
