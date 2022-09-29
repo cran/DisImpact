@@ -98,7 +98,7 @@ di_80_index <- function(success, group, cohort, weight, data, di_80_index_cutoff
                     (sum(success) - success) / (sum(n) - n)
                   }
                 } else {
-                  pct[group == reference_group & !is.na(group)]
+                  c(pct[group == reference_group & !is.na(group)], NA)[1]
                 }
          , reference_group=if (is.na(reference_group)) { # NA
                   group[pct==max(pct)][1] # can be more than 1 groups
@@ -114,12 +114,11 @@ di_80_index <- function(success, group, cohort, weight, data, di_80_index_cutoff
                   reference_group
                 }
          , di_80_index=pct/reference
-         , di_indicator=ifelse(di_80_index < di_80_index_cutoff, 1, 0)
-         , di_indicator=ifelse(is.nan(di_80_index), 0, di_indicator) # di_80_index is NaN when the reference rate is zero; in this case, there is no DI
+         , di_indicator=ifelse(di_80_index < di_80_index_cutoff, 1, 0) %>% coalesce(0)
            ) %>% 
     ungroup %>%
     mutate(success_needed_not_di=ifelse(di_indicator==1, ceiling((di_80_index_cutoff * reference - pct) * n), 0)
-           , success_needed_full_parity=ifelse(pct < reference, ceiling((reference - pct) * n), 0)
+           , success_needed_full_parity=ifelse(pct < reference, ceiling((reference - pct) * n), 0) %>% coalesce(0)
     ) %>% 
     arrange(cohort, group)
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Vinh Nguyen" />
 
-<meta name="date" content="2022-08-22" />
+<meta name="date" content="2022-09-29" />
 
 <title>DisImpact Tutorial</title>
 
@@ -153,7 +153,7 @@ code span.ot { color: #007020; }
 <div class="inner">
 <h1 class="title toc-ignore">DisImpact Tutorial</h1>
 <h3 class="author">Vinh Nguyen</h3>
-<h3 class="date">2022-08-22</h3>
+<h3 class="date">2022-09-29</h3>
 </div>
 </header>
 
@@ -459,18 +459,18 @@ from <code>group</code>.</p>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span>Ethnicity, <span class="at">cohort=</span>Cohort, <span class="at">reference=</span><span class="st">&#39;hpg&#39;</span>, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##    cohort           group    n success       pct reference reference_group
-## 1    2017           Asian 3000    2062 0.6873333 0.6873333             hpg
-## 2    2017           Black 1000     310 0.3100000 0.6873333             hpg
-## 3    2017        Hispanic 2000     410 0.2050000 0.6873333             hpg
-## 4    2017 Multi-Ethnicity  500     262 0.5240000 0.6873333             hpg
-## 5    2017 Native American  100      43 0.4300000 0.6873333             hpg
-## 6    2017           White 3400    2053 0.6038235 0.6873333             hpg
-## 7    2018           Asian 3000    2230 0.7433333 0.7433333             hpg
-## 8    2018           Black 1000     297 0.2970000 0.7433333             hpg
-## 9    2018        Hispanic 2000     437 0.2185000 0.7433333             hpg
-## 10   2018 Multi-Ethnicity  500     242 0.4840000 0.7433333             hpg
-## 11   2018 Native American  100      35 0.3500000 0.7433333             hpg
-## 12   2018           White 3400    2147 0.6314706 0.7433333             hpg
+## 1    2017           Asian 3000    2062 0.6873333 0.6873333           Asian
+## 2    2017           Black 1000     310 0.3100000 0.6873333           Asian
+## 3    2017        Hispanic 2000     410 0.2050000 0.6873333           Asian
+## 4    2017 Multi-Ethnicity  500     262 0.5240000 0.6873333           Asian
+## 5    2017 Native American  100      43 0.4300000 0.6873333           Asian
+## 6    2017           White 3400    2053 0.6038235 0.6873333           Asian
+## 7    2018           Asian 3000    2230 0.7433333 0.7433333           Asian
+## 8    2018           Black 1000     297 0.2970000 0.7433333           Asian
+## 9    2018        Hispanic 2000     437 0.2185000 0.7433333           Asian
+## 10   2018 Multi-Ethnicity  500     242 0.4840000 0.7433333           Asian
+## 11   2018 Native American  100      35 0.3500000 0.7433333           Asian
+## 12   2018           White 3400    2147 0.6314706 0.7433333           Asian
 ##           moe    pct_lo    pct_hi di_indicator success_needed_not_di
 ## 1  0.03000000 0.6573333 0.7173333            0                     0
 ## 2  0.03099032 0.2790097 0.3409903            1                   347
@@ -1131,29 +1131,29 @@ fly:</p>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform success</span></span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size=</span><span class="fu">nrow</span>(student_equity), <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span><span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>))</span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(a)</span></code></pre></div>
-<pre><code>## [1] 0.0532</code></pre>
+<pre><code>## [1] 0.04975</code></pre>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span><span class="fu">pmax</span>(Transfer, a), <span class="at">group=</span>Ethnicity, <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span></span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##             group    n success       pct reference reference_group        moe
-## 1           Asian 6000    4376 0.7293333    0.5515         overall 0.03000000
-## 2           Black 2000     694 0.3470000    0.5515         overall 0.03000000
-## 3        Hispanic 4000    1009 0.2522500    0.5515         overall 0.03000000
-## 4 Multi-Ethnicity 1000     526 0.5260000    0.5515         overall 0.03099032
-## 5 Native American  200      85 0.4250000    0.5515         overall 0.06929646
-## 6           White 6800    4340 0.6382353    0.5515         overall 0.03000000
+## 1           Asian 6000    4362 0.7270000   0.54985         overall 0.03000000
+## 2           Black 2000     686 0.3430000   0.54985         overall 0.03000000
+## 3        Hispanic 4000    1012 0.2530000   0.54985         overall 0.03000000
+## 4 Multi-Ethnicity 1000     534 0.5340000   0.54985         overall 0.03099032
+## 5 Native American  200      82 0.4100000   0.54985         overall 0.06929646
+## 6           White 6800    4321 0.6354412   0.54985         overall 0.03000000
 ##      pct_lo    pct_hi di_indicator success_needed_not_di
-## 1 0.6993333 0.7593333            0                     0
-## 2 0.3170000 0.3770000            1                   349
-## 3 0.2222500 0.2822500            1                  1077
-## 4 0.4950097 0.5569903            0                     0
-## 5 0.3557035 0.4942965            1                    12
-## 6 0.6082353 0.6682353            0                     0
+## 1 0.6970000 0.7570000            0                     0
+## 2 0.3130000 0.3730000            1                   354
+## 3 0.2230000 0.2830000            1                  1068
+## 4 0.5030097 0.5649903            0                     0
+## 5 0.3407035 0.4792965            1                    15
+## 6 0.6054412 0.6654412            0                     0
 ##   success_needed_full_parity
 ## 1                          0
-## 2                        410
-## 3                       1197
-## 4                         26
-## 5                         26
+## 2                        414
+## 3                       1188
+## 4                         16
+## 5                         28
 ## 6                          0</code></pre>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collapse Black and Hispanic</span></span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_ppg</span>(<span class="at">success=</span>Transfer, <span class="at">group=</span><span class="fu">ifelse</span>(Ethnicity <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Black&#39;</span>, <span class="st">&#39;Hispanic&#39;</span>), <span class="st">&#39;Black/Hispanic&#39;</span>, Ethnicity), <span class="at">data=</span>student_equity) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
@@ -1186,151 +1186,151 @@ iterate across:</p>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple group variables</span></span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">di_iterate</span>(<span class="at">data=</span>student_equity, <span class="at">success_vars=</span><span class="fu">c</span>(<span class="st">&#39;Transfer&#39;</span>), <span class="at">group_vars=</span><span class="fu">c</span>(<span class="st">&#39;Ethnicity&#39;</span>, <span class="st">&#39;Gender&#39;</span>), <span class="at">cohort_vars=</span><span class="fu">c</span>(<span class="st">&#39;Cohort&#39;</span>), <span class="at">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span>) <span class="sc">%&gt;%</span> as.data.frame</span></code></pre></div>
 <pre><code>##    success_variable cohort_variable cohort disaggregation           group     n
-## 1          Transfer          Cohort   2017      Ethnicity           Asian  3000
-## 2          Transfer          Cohort   2017      Ethnicity           Black  1000
-## 3          Transfer          Cohort   2017      Ethnicity        Hispanic  2000
-## 4          Transfer          Cohort   2017      Ethnicity Multi-Ethnicity   500
-## 5          Transfer          Cohort   2017      Ethnicity Native American   100
-## 6          Transfer          Cohort   2017      Ethnicity           White  3400
-## 7          Transfer          Cohort   2018      Ethnicity           Asian  3000
-## 8          Transfer          Cohort   2018      Ethnicity           Black  1000
-## 9          Transfer          Cohort   2018      Ethnicity        Hispanic  2000
-## 10         Transfer          Cohort   2018      Ethnicity Multi-Ethnicity   500
-## 11         Transfer          Cohort   2018      Ethnicity Native American   100
-## 12         Transfer          Cohort   2018      Ethnicity           White  3400
-## 13         Transfer          Cohort   2017         Gender          Female  4930
-## 14         Transfer          Cohort   2017         Gender            Male  4886
-## 15         Transfer          Cohort   2017         Gender           Other   184
-## 16         Transfer          Cohort   2018         Gender          Female  4928
-## 17         Transfer          Cohort   2018         Gender            Male  4880
-## 18         Transfer          Cohort   2018         Gender           Other   192
-## 19         Transfer          Cohort   2017         - None           - All 10000
-## 20         Transfer          Cohort   2018         - None           - All 10000
+## 1          Transfer          Cohort   2017         - None           - All 10000
+## 2          Transfer          Cohort   2017      Ethnicity           Asian  3000
+## 3          Transfer          Cohort   2017      Ethnicity           Black  1000
+## 4          Transfer          Cohort   2017      Ethnicity        Hispanic  2000
+## 5          Transfer          Cohort   2017      Ethnicity Multi-Ethnicity   500
+## 6          Transfer          Cohort   2017      Ethnicity Native American   100
+## 7          Transfer          Cohort   2017      Ethnicity           White  3400
+## 8          Transfer          Cohort   2017         Gender          Female  4930
+## 9          Transfer          Cohort   2017         Gender            Male  4886
+## 10         Transfer          Cohort   2017         Gender           Other   184
+## 11         Transfer          Cohort   2018         - None           - All 10000
+## 12         Transfer          Cohort   2018      Ethnicity           Asian  3000
+## 13         Transfer          Cohort   2018      Ethnicity           Black  1000
+## 14         Transfer          Cohort   2018      Ethnicity        Hispanic  2000
+## 15         Transfer          Cohort   2018      Ethnicity Multi-Ethnicity   500
+## 16         Transfer          Cohort   2018      Ethnicity Native American   100
+## 17         Transfer          Cohort   2018      Ethnicity           White  3400
+## 18         Transfer          Cohort   2018         Gender          Female  4928
+## 19         Transfer          Cohort   2018         Gender            Male  4880
+## 20         Transfer          Cohort   2018         Gender           Other   192
 ##    success       pct ppg_reference ppg_reference_group        moe    pct_lo
-## 1     2062 0.6873333        0.5140             overall 0.03000000 0.6573333
-## 2      310 0.3100000        0.5140             overall 0.03099032 0.2790097
-## 3      410 0.2050000        0.5140             overall 0.03000000 0.1750000
-## 4      262 0.5240000        0.5140             overall 0.04382693 0.4801731
-## 5       43 0.4300000        0.5140             overall 0.09800000 0.3320000
-## 6     2053 0.6038235        0.5140             overall 0.03000000 0.5738235
-## 7     2230 0.7433333        0.5388             overall 0.03000000 0.7133333
-## 8      297 0.2970000        0.5388             overall 0.03099032 0.2660097
-## 9      437 0.2185000        0.5388             overall 0.03000000 0.1885000
-## 10     242 0.4840000        0.5388             overall 0.04382693 0.4401731
-## 11      35 0.3500000        0.5388             overall 0.09800000 0.2520000
-## 12    2147 0.6314706        0.5388             overall 0.03000000 0.6014706
-## 13    2513 0.5097363        0.5140             overall 0.03000000 0.4797363
-## 14    2548 0.5214900        0.5140             overall 0.03000000 0.4914900
-## 15      79 0.4293478        0.5140             overall 0.07224656 0.3571013
-## 16    2638 0.5353084        0.5388             overall 0.03000000 0.5053084
-## 17    2642 0.5413934        0.5388             overall 0.03000000 0.5113934
-## 18     108 0.5625000        0.5388             overall 0.07072541 0.4917746
-## 19    5140 0.5140000        0.5140             overall 0.03000000 0.4840000
-## 20    5388 0.5388000        0.5388             overall 0.03000000 0.5088000
+## 1     5140 0.5140000        0.5140             overall 0.03000000 0.4840000
+## 2     2062 0.6873333        0.5140             overall 0.03000000 0.6573333
+## 3      310 0.3100000        0.5140             overall 0.03099032 0.2790097
+## 4      410 0.2050000        0.5140             overall 0.03000000 0.1750000
+## 5      262 0.5240000        0.5140             overall 0.04382693 0.4801731
+## 6       43 0.4300000        0.5140             overall 0.09800000 0.3320000
+## 7     2053 0.6038235        0.5140             overall 0.03000000 0.5738235
+## 8     2513 0.5097363        0.5140             overall 0.03000000 0.4797363
+## 9     2548 0.5214900        0.5140             overall 0.03000000 0.4914900
+## 10      79 0.4293478        0.5140             overall 0.07224656 0.3571013
+## 11    5388 0.5388000        0.5388             overall 0.03000000 0.5088000
+## 12    2230 0.7433333        0.5388             overall 0.03000000 0.7133333
+## 13     297 0.2970000        0.5388             overall 0.03099032 0.2660097
+## 14     437 0.2185000        0.5388             overall 0.03000000 0.1885000
+## 15     242 0.4840000        0.5388             overall 0.04382693 0.4401731
+## 16      35 0.3500000        0.5388             overall 0.09800000 0.2520000
+## 17    2147 0.6314706        0.5388             overall 0.03000000 0.6014706
+## 18    2638 0.5353084        0.5388             overall 0.03000000 0.5053084
+## 19    2642 0.5413934        0.5388             overall 0.03000000 0.5113934
+## 20     108 0.5625000        0.5388             overall 0.07072541 0.4917746
 ##       pct_hi di_indicator_ppg success_needed_not_di_ppg
-## 1  0.7173333                0                         0
-## 2  0.3409903                1                       174
-## 3  0.2350000                1                       558
-## 4  0.5678269                0                         0
-## 5  0.5280000                0                         0
-## 6  0.6338235                0                         0
-## 7  0.7733333                0                         0
-## 8  0.3279903                1                       211
-## 9  0.2485000                1                       581
-## 10 0.5278269                1                         6
-## 11 0.4480000                1                        10
-## 12 0.6614706                0                         0
-## 13 0.5397363                0                         0
-## 14 0.5514900                0                         0
-## 15 0.5015944                1                         3
-## 16 0.5653084                0                         0
-## 17 0.5713934                0                         0
-## 18 0.6332254                0                         0
-## 19 0.5440000                0                         0
-## 20 0.5688000                0                         0
+## 1  0.5440000                0                         0
+## 2  0.7173333                0                         0
+## 3  0.3409903                1                       174
+## 4  0.2350000                1                       558
+## 5  0.5678269                0                         0
+## 6  0.5280000                0                         0
+## 7  0.6338235                0                         0
+## 8  0.5397363                0                         0
+## 9  0.5514900                0                         0
+## 10 0.5015944                1                         3
+## 11 0.5688000                0                         0
+## 12 0.7733333                0                         0
+## 13 0.3279903                1                       211
+## 14 0.2485000                1                       581
+## 15 0.5278269                1                         6
+## 16 0.4480000                1                        10
+## 17 0.6614706                0                         0
+## 18 0.5653084                0                         0
+## 19 0.5713934                0                         0
+## 20 0.6332254                0                         0
 ##    success_needed_full_parity_ppg di_prop_index di_indicator_prop_index
-## 1                               0     1.3372244                       0
-## 2                             205     0.6031128                       1
-## 3                             619     0.3988327                       1
-## 4                               0     1.0194553                       0
-## 5                               9     0.8365759                       0
-## 6                               0     1.1747539                       0
-## 7                               0     1.3796090                       0
-## 8                             242     0.5512249                       1
-## 9                             641     0.4055308                       1
-## 10                             28     0.8982925                       0
-## 11                             19     0.6495917                       1
-## 12                              0     1.1719944                       0
-## 13                             22     0.9917049                       0
-## 14                              0     1.0145719                       0
-## 15                             16     0.8353071                       0
-## 16                             18     0.9935198                       0
-## 17                              0     1.0048134                       0
-## 18                              0     1.0439866                       0
-## 19                              0     1.0000000                       0
-## 20                              0     1.0000000                       0
+## 1                               0     1.0000000                       0
+## 2                               0     1.3372244                       0
+## 3                             205     0.6031128                       1
+## 4                             619     0.3988327                       1
+## 5                               0     1.0194553                       0
+## 6                               9     0.8365759                       0
+## 7                               0     1.1747539                       0
+## 8                              22     0.9917049                       0
+## 9                               0     1.0145719                       0
+## 10                             16     0.8353071                       0
+## 11                              0     1.0000000                       0
+## 12                              0     1.3796090                       0
+## 13                            242     0.5512249                       1
+## 14                            641     0.4055308                       1
+## 15                             28     0.8982925                       0
+## 16                             19     0.6495917                       1
+## 17                              0     1.1719944                       0
+## 18                             18     0.9935198                       0
+## 19                              0     1.0048134                       0
+## 20                              0     1.0439866                       0
 ##    success_needed_not_di_prop_index success_needed_full_parity_prop_index
 ## 1                                 0                                     0
-## 2                               111                                   227
-## 3                               491                                   773
-## 4                                 0                                     0
-## 5                                 0                                     9
-## 6                                 0                                     0
+## 2                                 0                                     0
+## 3                               111                                   227
+## 4                               491                                   773
+## 5                                 0                                     0
+## 6                                 0                                     9
 ## 7                                 0                                     0
-## 8                               146                                   269
-## 9                               507                                   801
-## 10                                0                                    29
-## 11                                9                                    20
+## 8                                 0                                    42
+## 9                                 0                                     0
+## 10                                0                                    16
+## 11                                0                                     0
 ## 12                                0                                     0
-## 13                                0                                    42
-## 14                                0                                     0
-## 15                                0                                    16
-## 16                                0                                    34
+## 13                              146                                   269
+## 14                              507                                   801
+## 15                                0                                    29
+## 16                                9                                    20
 ## 17                                0                                     0
-## 18                                0                                     0
+## 18                                0                                    34
 ## 19                                0                                     0
 ## 20                                0                                     0
 ##    di_80_index_reference_group di_80_index di_indicator_80_index
-## 1                        Asian   1.0000000                     0
-## 2                        Asian   0.4510184                     1
-## 3                        Asian   0.2982541                     1
-## 4                        Asian   0.7623666                     1
-## 5                        Asian   0.6256062                     1
-## 6                        Asian   0.8785017                     0
-## 7                        Asian   1.0000000                     0
-## 8                        Asian   0.3995516                     1
-## 9                        Asian   0.2939462                     1
-## 10                       Asian   0.6511211                     1
-## 11                       Asian   0.4708520                     1
-## 12                       Asian   0.8495120                     0
-## 13                        Male   0.9774614                     0
-## 14                        Male   1.0000000                     0
-## 15                        Male   0.8233098                     0
-## 16                       Other   0.9516595                     0
-## 17                       Other   0.9624772                     0
-## 18                       Other   1.0000000                     0
-## 19                       - All   1.0000000                     0
-## 20                       - All   1.0000000                     0
+## 1                        - All   1.0000000                     0
+## 2                        Asian   1.0000000                     0
+## 3                        Asian   0.4510184                     1
+## 4                        Asian   0.2982541                     1
+## 5                        Asian   0.7623666                     1
+## 6                        Asian   0.6256062                     1
+## 7                        Asian   0.8785017                     0
+## 8                         Male   0.9774614                     0
+## 9                         Male   1.0000000                     0
+## 10                        Male   0.8233098                     0
+## 11                       - All   1.0000000                     0
+## 12                       Asian   1.0000000                     0
+## 13                       Asian   0.3995516                     1
+## 14                       Asian   0.2939462                     1
+## 15                       Asian   0.6511211                     1
+## 16                       Asian   0.4708520                     1
+## 17                       Asian   0.8495120                     0
+## 18                       Other   0.9516595                     0
+## 19                       Other   0.9624772                     0
+## 20                       Other   1.0000000                     0
 ##    success_needed_not_di_80_index success_needed_full_parity_80_index
 ## 1                               0                                   0
-## 2                             240                                 378
-## 3                             690                                 965
-## 4                              13                                  82
-## 5                              12                                  26
-## 6                               0                                 284
-## 7                               0                                   0
-## 8                             298                                 447
-## 9                             753                                1050
-## 10                             56                                 130
-## 11                             25                                  40
-## 12                              0                                 381
-## 13                              0                                  58
-## 14                              0                                   0
-## 15                              0                                  17
-## 16                              0                                 134
-## 17                              0                                 103
-## 18                              0                                   0
-## 19                              0                                   0
+## 2                               0                                   0
+## 3                             240                                 378
+## 4                             690                                 965
+## 5                              13                                  82
+## 6                              12                                  26
+## 7                               0                                 284
+## 8                               0                                  58
+## 9                               0                                   0
+## 10                              0                                  17
+## 11                              0                                   0
+## 12                              0                                   0
+## 13                            298                                 447
+## 14                            753                                1050
+## 15                             56                                 130
+## 16                             25                                  40
+## 17                              0                                 381
+## 18                              0                                 134
+## 19                              0                                 103
 ## 20                              0                                   0</code></pre>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple group variables and different reference groups</span></span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1341,16 +1341,16 @@ iterate across:</p>
 <pre><code>## # A tibble: 38 x 25
 ##    success_variable cohort_variable cohort disaggregation group        n success
 ##    &lt;chr&gt;            &lt;chr&gt;            &lt;int&gt; &lt;chr&gt;          &lt;chr&gt;    &lt;dbl&gt;   &lt;int&gt;
-##  1 Transfer         Cohort            2017 Ethnicity      Asian     3000    2062
-##  2 Transfer         Cohort            2017 Ethnicity      Black     1000     310
-##  3 Transfer         Cohort            2017 Ethnicity      Hispanic  2000     410
-##  4 Transfer         Cohort            2017 Ethnicity      Multi-E~   500     262
-##  5 Transfer         Cohort            2017 Ethnicity      Native ~   100      43
-##  6 Transfer         Cohort            2017 Ethnicity      White     3400    2053
-##  7 Transfer         Cohort            2018 Ethnicity      Asian     3000    2230
-##  8 Transfer         Cohort            2018 Ethnicity      Black     1000     297
-##  9 Transfer         Cohort            2018 Ethnicity      Hispanic  2000     437
-## 10 Transfer         Cohort            2018 Ethnicity      Multi-E~   500     242
+##  1 Transfer         Cohort            2017 - None         - All    10000    5140
+##  2 Transfer         Cohort            2017 Ethnicity      Asian     3000    2062
+##  3 Transfer         Cohort            2017 Ethnicity      Black     1000     310
+##  4 Transfer         Cohort            2017 Ethnicity      Hispanic  2000     410
+##  5 Transfer         Cohort            2017 Ethnicity      Multi-E~   500     262
+##  6 Transfer         Cohort            2017 Ethnicity      Native ~   100      43
+##  7 Transfer         Cohort            2017 Ethnicity      White     3400    2053
+##  8 Transfer         Cohort            2017 Gender         Female    4930    2513
+##  9 Transfer         Cohort            2017 Gender         Male      4886    2548
+## 10 Transfer         Cohort            2017 Gender         Other      184      79
 ## # ... with 28 more rows, and 18 more variables: pct &lt;dbl&gt;, ppg_reference &lt;dbl&gt;,
 ## #   ppg_reference_group &lt;chr&gt;, moe &lt;dbl&gt;, pct_lo &lt;dbl&gt;, pct_hi &lt;dbl&gt;,
 ## #   di_indicator_ppg &lt;dbl&gt;, success_needed_not_di_ppg &lt;dbl&gt;,
@@ -1387,21 +1387,22 @@ code caused by version mismatch.</p>
 ## 
 ## other attached packages:
 ## [1] forcats_0.5.0    scales_1.1.1     ggplot2_3.3.2    stringr_1.4.0   
-## [5] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.19
+## [5] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.20
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.8.3     highr_0.9        pillar_1.7.0     bslib_0.3.1     
-##  [5] compiler_4.0.2   jquerylib_0.1.4  prettydoc_0.4.1  tools_4.0.2     
-##  [9] digest_0.6.25    gtable_0.3.0     jsonlite_1.7.0   evaluate_0.15   
-## [13] lifecycle_1.0.1  tibble_3.1.6     fstcore_0.9.12   pkgconfig_2.0.3 
-## [17] rlang_1.0.1      cli_3.2.0        DBI_1.1.0        yaml_2.3.5      
-## [21] parallel_4.0.2   xfun_0.30        fastmap_1.1.0    withr_2.5.0     
-## [25] generics_0.1.2   vctrs_0.3.8      sass_0.4.1       grid_4.0.2      
-## [29] tidyselect_1.1.2 glue_1.6.1       R6_2.3.0         fansi_1.0.2     
-## [33] rmarkdown_2.14   farver_2.0.3     tidyr_1.2.0      purrr_0.3.4     
-## [37] blob_1.2.1       magrittr_2.0.2   ellipsis_0.3.2   htmltools_0.5.2 
-## [41] fst_0.9.8        assertthat_0.2.1 colorspace_1.4-1 labeling_0.3    
-## [45] utf8_1.2.2       stringi_1.4.6    munsell_0.5.0    crayon_1.5.0</code></pre>
+##  [1] Rcpp_1.0.8.3      highr_0.9         pillar_1.7.0      bslib_0.3.1      
+##  [5] compiler_4.0.2    jquerylib_0.1.4   sets_1.0-21       prettydoc_0.4.1  
+##  [9] tools_4.0.2       digest_0.6.25     gtable_0.3.0      jsonlite_1.7.0   
+## [13] evaluate_0.15     lifecycle_1.0.1   tibble_3.1.6      fstcore_0.9.12   
+## [17] pkgconfig_2.0.3   rlang_1.0.1       DBI_1.1.0         cli_3.2.0        
+## [21] parallel_4.0.2    yaml_2.3.5        xfun_0.30         fastmap_1.1.0    
+## [25] withr_2.5.0       duckdb_0.5.0      generics_0.1.2    vctrs_0.3.8      
+## [29] sass_0.4.1        grid_4.0.2        tidyselect_1.1.2  data.table_1.14.3
+## [33] glue_1.6.1        R6_2.3.0          fansi_1.0.2       rmarkdown_2.14   
+## [37] farver_2.0.3      tidyr_1.2.0       purrr_0.3.4       blob_1.2.1       
+## [41] magrittr_2.0.2    htmltools_0.5.2   ellipsis_0.3.2    fst_0.9.8        
+## [45] assertthat_0.2.1  colorspace_1.4-1  collapse_1.8.8    labeling_0.3     
+## [49] utf8_1.2.2        stringi_1.4.6     munsell_0.5.0     crayon_1.5.0</code></pre>
 </div>
     </section>
   </div>

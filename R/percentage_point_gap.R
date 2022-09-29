@@ -1,11 +1,3 @@
-## library(devtools)
-## library(roxygen2)
-## setwd('DisImpact')
-## document()
-## devtools::build()
-## setwd('..')
-## install('DisImpact')
-
 ##' Calculate the margin of error (MOE) for the percentage point gap (PPG) method.
 ##'
 ##' @title Margin of error for the PPG
@@ -187,7 +179,16 @@ di_ppg <- function(success, group, cohort, weight, reference=c('overall', 'hpg',
              , reference_type!='numeric' ~ if(sum(group==reference_type, na.rm=TRUE) > 0) {success[group==reference_type & !is.na(group)] / n[group==reference_type & !is.na(group)]} else {NA_real_}
              , reference_type=='numeric' ~ reference_numeric
              )
-             , reference_group=reference_type
+             ## , reference_group=reference_type # Change to next line for ver. 0.0.20 and after so that 'hpg' returns the actual group
+             ## , reference_group=case_when( # Following removed because group could be non-character, which would yield an error for case_when
+             ##     reference_type == 'hpg' ~ group[pct == max(pct)][1]
+             ##   , TRUE ~ reference_type
+             ##   )
+             , reference_group=if (reference_type == 'hpg') { # this is similar to 80_percent_index
+                                 group[pct==max(pct)][1]
+                               } else {
+                                 reference_type
+                               }
              ) %>%
       ungroup
   } else {
@@ -202,11 +203,10 @@ di_ppg <- function(success, group, cohort, weight, reference=c('overall', 'hpg',
       moe=if (use_prop_in_moe) { ppg_moe(n=n, proportion=pct, min_moe=min_moe, prop_sub_0=prop_sub_0, prop_sub_1=prop_sub_1) } else { ppg_moe(n=n, min_moe=min_moe) }
          , pct_lo=pct - moe
          , pct_hi=pct + moe
-         , di_indicator=ifelse(pct_hi <= reference, 1, 0)
+         , di_indicator=ifelse(pct_hi <= reference, 1, 0) %>% coalesce(0)
            ) %>%
-    mutate(di_indicator=ifelse(reference_group=='all but current' & is.na(di_indicator), 0, di_indicator)) %>% # When 'all but current' is used and there is only a single group, there is no comparison group, so di_indicator is NA; set this to 0
     mutate(success_needed_not_di=ifelse(di_indicator==1, ceiling((reference - (pct+moe)) * n), 0)
-           , success_needed_full_parity=ifelse(pct < reference, ceiling((reference - pct) * n), 0)
+           , success_needed_full_parity=ifelse(pct < reference, ceiling((reference - pct) * n), 0) %>% coalesce(0)
            ) %>% 
     arrange(cohort, group)
   

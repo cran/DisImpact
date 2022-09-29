@@ -12,7 +12,7 @@
 
 <meta name="author" content="Vinh Nguyen" />
 
-<meta name="date" content="2022-08-22" />
+<meta name="date" content="2022-09-29" />
 
 <title>Disproportionate Impact (DI) Calculations on Long, Summarized Data Sets</title>
 
@@ -154,7 +154,7 @@ code span.ot { color: #007020; }
 <h1 class="title toc-ignore">Disproportionate Impact (DI) Calculations
 on Long, Summarized Data Sets</h1>
 <h3 class="author">Vinh Nguyen</h3>
-<h3 class="date">2022-08-22</h3>
+<h3 class="date">2022-09-29</h3>
 </div>
 </header>
 
@@ -529,19 +529,14 @@ English’,‘Transfer’, ‘Associate Degree’.</li>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">ppg_reference_groups=</span><span class="st">&#39;all but current&#39;</span> <span class="co"># PPG-1</span></span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">di_80_index_reference_groups=</span><span class="st">&#39;all but current&#39;</span> <span class="co"># Relative rates analogous to PPG-1 for reference group</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                  )</span></code></pre></div>
-<pre><code>## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;)
-## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;,
-## &quot;subgroup1&quot;)
-## Joining, by = c(&quot;categoryLabel&quot;, &quot;cohort&quot;, &quot;disagg1&quot;, &quot;academicYear&quot;)
-## Joining, by = c(&quot;..scenario..&quot;, &quot;..groupref..&quot;)</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_1)</span></code></pre></div>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                  )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_1)</span></code></pre></div>
 <pre><code>## [1] 120</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant)</span></code></pre></div>
 <pre><code>## [1] 120</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>di_summ_1 <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>di_summ_1 <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##                                                                                            categoryLabel
 ## 1 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
 ## 2 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
@@ -602,28 +597,24 @@ English’,‘Transfer’, ‘Associate Degree’.</li>
 <code>cohort_var_col</code> argument for rows with common
 <code>disagg_var_col</code>, <code>group_var_col</code>, and those in
 <code>summarize_by_vars</code> to be aggregated or collapsed:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: by outcome, collapse cohort academic years</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>di_summ_2 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># , cohort_var_col=&#39;academicYear&#39;</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">ppg_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">di_80_index_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                                  )</span></code></pre></div>
-<pre><code>## Joining, by = c(&quot;cohort&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;)
-## Joining, by = c(&quot;cohort&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;, &quot;subgroup1&quot;)
-## Joining, by = c(&quot;categoryLabel&quot;, &quot;cohort&quot;, &quot;disagg1&quot;)
-## Joining, by = c(&quot;..scenario..&quot;, &quot;..groupref..&quot;)</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_2)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: by outcome, collapse cohort academic years</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>di_summ_2 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                <span class="co"># , cohort_var_col=&#39;academicYear&#39;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">ppg_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">di_80_index_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                                  )</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_2)</span></code></pre></div>
 <pre><code>## [1] 43</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant)</span></code></pre></div>
 <pre><code>## [1] 120</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>di_summ_2 <span class="sc">%&gt;%</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>di_summ_2 <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##                                                                                            categoryLabel
 ## 1 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
 ## 2 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
@@ -689,33 +680,26 @@ gender). The <a href="./Intersectionality.html">Intersectionality</a>
 vignette discusses this in some detail. One could do this using the
 second derived data set, <code>d_relevant_gender</code>, which contains
 summarized data with rows split out by gender:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3: by outcome, intersecting gender</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>di_summ_3 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant_gender</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col_2=</span><span class="st">&#39;disagg2&#39;</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col_2=</span><span class="st">&#39;subgroup2&#39;</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">cohort_var_col=</span><span class="st">&#39;academicYear&#39;</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">di_80_index_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                                  )</span></code></pre></div>
-<pre><code>## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;,
-## &quot;disagg2&quot;)
-## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;,
-## &quot;subgroup1&quot;, &quot;disagg2&quot;, &quot;subgroup2&quot;)
-## Joining, by = c(&quot;categoryLabel&quot;, &quot;cohort&quot;, &quot;disagg1&quot;, &quot;disagg2&quot;,
-## &quot;academicYear&quot;)
-## Joining, by = c(&quot;..scenario..&quot;, &quot;..groupref..&quot;)</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_3)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3: by outcome, intersecting gender</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>di_summ_3 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant_gender</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col_2=</span><span class="st">&#39;disagg2&#39;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col_2=</span><span class="st">&#39;subgroup2&#39;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">cohort_var_col=</span><span class="st">&#39;academicYear&#39;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">ppg_reference_groups=</span><span class="st">&#39;overall&#39;</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">di_80_index_reference_groups=</span><span class="st">&#39;all but current&#39;</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                                  )</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_3)</span></code></pre></div>
 <pre><code>## [1] 201</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant_gender)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(d_relevant_gender)</span></code></pre></div>
 <pre><code>## [1] 201</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>di_summ_3 <span class="sc">%&gt;%</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>di_summ_3 <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##                                                                                            categoryLabel
 ## 1 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
 ## 2 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
@@ -793,28 +777,23 @@ the data set specified by <code>data</code> that indicates the
 rows/groups to be used as reference. The same groups will be used as
 reference for both the percentage point gap method and the 80% index
 method. The following is an illustration:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4: By outcome, cohort; custom reference groups</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>di_summ_4 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant <span class="sc">%&gt;%</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">filter</span>(subgroup1 <span class="sc">!=</span> <span class="st">&#39;All Masked Values&#39;</span>) <span class="sc">%&gt;%</span> <span class="co"># some foster youth and vetans disaggregation have just a single All Masked Values row; removing these scenarios for purpose of illustration</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">mutate</span>(<span class="at">custom_reference=</span><span class="fu">ifelse</span>(subgroup1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;White&#39;</span>,<span class="st">&#39;Not Foster Youth&#39;</span>, <span class="st">&#39;Not Veteran&#39;</span>), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="co"># create a variable that flags the reference groups</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">cohort_var_col=</span><span class="st">&#39;academicYear&#39;</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">custom_reference_group_flag_var=</span><span class="st">&#39;custom_reference&#39;</span> <span class="co"># Specify variable/flag for custom reference groups</span></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>                                  )</span></code></pre></div>
-<pre><code>## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;)
-## Joining, by = c(&quot;cohort&quot;, &quot;academicYear&quot;, &quot;categoryLabel&quot;, &quot;disagg1&quot;,
-## &quot;subgroup1&quot;, &quot;custom_reference&quot;)
-## Joining, by = c(&quot;categoryLabel&quot;, &quot;cohort&quot;, &quot;disagg1&quot;, &quot;academicYear&quot;)
-## Joining, by = c(&quot;..scenario..&quot;, &quot;..groupref..&quot;)</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_4)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 4: By outcome, cohort; custom reference groups</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>di_summ_4 <span class="ot">&lt;-</span> <span class="fu">di_iterate_on_long</span>(<span class="at">data=</span>d_relevant <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">filter</span>(subgroup1 <span class="sc">!=</span> <span class="st">&#39;All Masked Values&#39;</span>) <span class="sc">%&gt;%</span> <span class="co"># some foster youth and vetans disaggregation have just a single All Masked Values row; removing these scenarios for purpose of illustration</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="fu">mutate</span>(<span class="at">custom_reference=</span><span class="fu">ifelse</span>(subgroup1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;White&#39;</span>,<span class="st">&#39;Not Foster Youth&#39;</span>, <span class="st">&#39;Not Veteran&#39;</span>), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="co"># create a variable that flags the reference groups</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">num_var=</span><span class="st">&#39;value&#39;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">denom_var=</span><span class="st">&#39;denom&#39;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">disagg_var_col=</span><span class="st">&#39;disagg1&#39;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">group_var_col=</span><span class="st">&#39;subgroup1&#39;</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">cohort_var_col=</span><span class="st">&#39;academicYear&#39;</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">summarize_by_vars=</span><span class="fu">c</span>(<span class="st">&#39;categoryLabel&#39;</span>, <span class="st">&#39;cohort&#39;</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>                                , <span class="at">custom_reference_group_flag_var=</span><span class="st">&#39;custom_reference&#39;</span> <span class="co"># Specify variable/flag for custom reference groups</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                                  )</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(di_summ_4)</span></code></pre></div>
 <pre><code>## [1] 83</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>di_summ_4 <span class="sc">%&gt;%</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>di_summ_4 <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  head <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  as.data.frame</span></code></pre></div>
 <pre><code>##                                                                                            categoryLabel
 ## 1 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
 ## 2 Completed Both Transfer-Level Math and English Within the District in the First Year Aligned with SCFF
@@ -884,7 +863,7 @@ to <code>di_iterate</code> that’s applied to a unitary data set.</p>
 <p>This vignette was generated using an R session with the following
 packages. There may be some discrepancies when the reader replicates the
 code caused by version mismatch.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.0.2 (2020-06-22)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 19044)
@@ -902,20 +881,21 @@ code caused by version mismatch.</p>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.19
+## [1] knitr_1.39       dplyr_1.0.8      DisImpact_0.0.20
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.8.3     highr_0.9        pillar_1.7.0     bslib_0.3.1     
-##  [5] compiler_4.0.2   jquerylib_0.1.4  prettydoc_0.4.1  tools_4.0.2     
-##  [9] digest_0.6.25    jsonlite_1.7.0   evaluate_0.15    lifecycle_1.0.1 
-## [13] tibble_3.1.6     fstcore_0.9.12   pkgconfig_2.0.3  rlang_1.0.1     
-## [17] cli_3.2.0        DBI_1.1.0        yaml_2.3.5       parallel_4.0.2  
-## [21] xfun_0.30        fastmap_1.1.0    stringr_1.4.0    generics_0.1.2  
-## [25] vctrs_0.3.8      sass_0.4.1       tidyselect_1.1.2 glue_1.6.1      
-## [29] R6_2.3.0         fansi_1.0.2      rmarkdown_2.14   tidyr_1.2.0     
-## [33] purrr_0.3.4      blob_1.2.1       magrittr_2.0.2   ellipsis_0.3.2  
-## [37] htmltools_0.5.2  fst_0.9.8        assertthat_0.2.1 utf8_1.2.2      
-## [41] stringi_1.4.6    crayon_1.5.0</code></pre>
+##  [1] Rcpp_1.0.8.3      highr_0.9         pillar_1.7.0      bslib_0.3.1      
+##  [5] compiler_4.0.2    jquerylib_0.1.4   sets_1.0-21       prettydoc_0.4.1  
+##  [9] tools_4.0.2       digest_0.6.25     jsonlite_1.7.0    evaluate_0.15    
+## [13] lifecycle_1.0.1   tibble_3.1.6      fstcore_0.9.12    pkgconfig_2.0.3  
+## [17] rlang_1.0.1       DBI_1.1.0         cli_3.2.0         parallel_4.0.2   
+## [21] yaml_2.3.5        xfun_0.30         fastmap_1.1.0     duckdb_0.5.0     
+## [25] stringr_1.4.0     generics_0.1.2    vctrs_0.3.8       sass_0.4.1       
+## [29] tidyselect_1.1.2  data.table_1.14.3 glue_1.6.1        R6_2.3.0         
+## [33] fansi_1.0.2       rmarkdown_2.14    tidyr_1.2.0       purrr_0.3.4      
+## [37] blob_1.2.1        magrittr_2.0.2    htmltools_0.5.2   ellipsis_0.3.2   
+## [41] fst_0.9.8         assertthat_0.2.1  collapse_1.8.8    utf8_1.2.2       
+## [45] stringi_1.4.6     crayon_1.5.0</code></pre>
 </div>
     </section>
   </div>
